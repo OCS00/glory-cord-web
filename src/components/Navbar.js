@@ -1,6 +1,7 @@
 // Dosya: src/components/Navbar.js
 'use client';
 import Link from 'next/link';
+import Image from 'next/image';
 import { useState } from 'react';
 
 export default function Navbar() {
@@ -38,11 +39,21 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex justify-between items-center h-20 md:h-24">
             
-            {/* LOGO */}
+            {/* 🌟 YENİ LOGO ALANI (GÖRSEL + METİN YAN YANA) 🌟 */}
             <div className="flex-shrink-0 flex items-center pl-0 md:pl-16 z-50">
-              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center">
-                <span className="text-2xl md:text-3xl font-black tracking-[0.1em] text-white">
-                  GLORY<span className="text-[#FF8A00] ml-1 md:ml-2">CORD</span>
+              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center gap-3 md:gap-4">
+                {/* Sol Taraftaki Görsel Logo */}
+                <Image 
+                  src="/gloryy.png" 
+                  alt="Glory Cord Icon" 
+                  width={150} 
+                  height={150} 
+                  priority
+                  className="h-10 md:h-14 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
+                />
+                {/* Sağ Taraftaki Metin */}
+                <span className="text-xl md:text-2xl font-black tracking-[0.15em] text-white">
+                  GLORY<span className="text-[#FF8A00] ml-1">CORD</span>
                 </span>
               </Link>
             </div>
@@ -51,15 +62,14 @@ export default function Navbar() {
             <div className="hidden md:flex space-x-12 items-center">
               {[
                 { name: 'Ana Sayfa', path: '/' },
-                { name: 'Manifesto', path: '/hakkimizda' },
-                { name: 'Koleksiyon', path: '/urunler' },
+                { name: 'Hakkımızda', path: '/hakkimizda' },
+                { name: 'Ürünler', path: '/urunler' },
                 { name: 'İletişim', path: '/iletisim' }
               ].map((link, index) => (
                 <Link key={index} href={link.path} className="relative group py-2">
                   <span className="text-[10px] font-black text-gray-400 group-hover:text-white transition-colors uppercase tracking-[0.3em]">
                     {link.name}
                   </span>
-                  {/* Turuncu Kordon Alt Çizgisi */}
                   <span className="absolute -bottom-1 left-0 w-0 h-[2px] bg-[#FF8A00] transition-all duration-500 ease-out group-hover:w-full"></span>
                 </Link>
               ))}
@@ -68,7 +78,7 @@ export default function Navbar() {
             {/* MASAÜSTÜ BUTON */}
             <div className="hidden md:flex items-center">
               <Link href="/iletisim" className="px-8 py-3 bg-white text-black font-black text-[10px] uppercase tracking-[0.3em] rounded-full hover:bg-[#FF8A00] hover:text-black hover:shadow-[0_0_30px_rgba(255,138,0,0.4)] transition-all duration-300 transform hover:-translate-y-1 cursor-none">
-                Projeyi Başlat
+                Siparişi Başlat
               </Link>
             </div>
 
@@ -92,8 +102,8 @@ export default function Navbar() {
           <div className="flex flex-col space-y-8 text-left">
             {[
               { name: 'Ana Sayfa', path: '/' },
-              { name: 'Manifesto', path: '/hakkimizda' },
-              { name: 'Koleksiyon', path: '/urunler' },
+              { name: 'Hakkımızda', path: '/hakkimizda' },
+              { name: 'Ürünler', path: '/urunler' },
               { name: 'İletişim', path: '/iletisim' }
             ].map((link, index) => (
               <Link 
@@ -110,7 +120,7 @@ export default function Navbar() {
               onClick={() => setIsMobileMenuOpen(false)}
               className="mt-8 px-8 py-5 bg-[#FF8A00] text-black font-black text-xs uppercase tracking-[0.3em] rounded-full text-center"
             >
-              Projeyi Başlat
+              Siparişi Başlat
             </Link>
           </div>
         </div>

@@ -1,29 +1,47 @@
 // Dosya: src/app/iletisim/page.js
 'use client';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { motion } from 'framer-motion';
+// EmailJS paketini kodumuza dahil ediyoruz
+import emailjs from '@emailjs/browser';
 
 export default function Iletisim() {
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
-  const [formStatus, setFormStatus] = useState('');
+  const [formStatus, setFormStatus] = useState(''); // 'loading', 'success', 'error'
+  
+  // Formu referans almak için useRef kullanıyoruz
+  const form = useRef();
 
-  // Özel İmleç
+  // Özel İmleç Takibi
   useEffect(() => {
     const handleMouseMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
     window.addEventListener('mousemove', handleMouseMove);
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
-  // Form Gönderme Simülasyonu
+  // Gerçek E-Posta Gönderme Fonksiyonu
   const handleSubmit = (e) => {
     e.preventDefault();
-    setFormStatus('loading');
-    setTimeout(() => {
-      setFormStatus('success');
-      e.target.reset();
-      setTimeout(() => setFormStatus(''), 5000);
-    }, 1500);
+    setFormStatus('loading'); 
+
+    // EmailJS ile e-posta gönderimi
+    emailjs.sendForm(
+      'service_dyanpkl',     
+      'template_htsk4qk',    
+      form.current,          
+      '1qSW2lBGlrx0b5eEN'    
+    )
+    .then((result) => {
+        console.log("Mesaj başarıyla gönderildi:", result.text);
+        setFormStatus('success');
+        e.target.reset(); // Kutuları temizle
+        setTimeout(() => setFormStatus(''), 5000); 
+    }, (error) => {
+        console.error("Mesaj gönderilirken hata oluştu:", error.text);
+        setFormStatus('error');
+        setTimeout(() => setFormStatus(''), 5000);
+    });
   };
 
   const fadeUp = {
@@ -47,7 +65,7 @@ export default function Iletisim() {
         
         {/* ÜST BAŞLIK */}
         <motion.div initial="hidden" animate="visible" variants={staggerContainer} className="text-center mb-20">
-          {/* İŞTE BURAYI DÜZELTTİK: motion.span ile açıp motion.span ile kapattık */}
+          {/* HATA BURADAYDI: motion.span etiketi doğru şekilde kapatıldı */}
           <motion.span variants={fadeUp} className="text-[#FF8A00] font-black tracking-[0.4em] text-xs uppercase mb-4 block">
             Bize Ulaşın
           </motion.span>
@@ -103,43 +121,50 @@ export default function Iletisim() {
             <div className="bg-[#0a0a0a] border border-white/5 p-8 md:p-12 rounded-[2rem]">
               <h3 className="text-2xl font-black text-white uppercase mb-8">Mesaj Gönder</h3>
               
+              {/* Durum Mesajları */}
               {formStatus === 'success' && (
                 <div className="bg-green-500/10 border border-green-500/30 text-green-500 px-6 py-4 rounded-xl mb-8 text-xs font-black tracking-widest uppercase text-center">
                   Mesajınız başarıyla iletildi. En kısa sürede dönüş yapacağız.
                 </div>
               )}
+              {formStatus === 'error' && (
+                <div className="bg-red-500/10 border border-red-500/30 text-red-500 px-6 py-4 rounded-xl mb-8 text-xs font-black tracking-widest uppercase text-center">
+                  Bir hata oluştu. Lütfen doğrudan e-posta adresimizden ulaşın.
+                </div>
+              )}
 
-              <form onSubmit={handleSubmit} className="space-y-6">
+              {/* Girdilere emailjs'in yakalaması için 'name' özellikleri eklendi */}
+              <form ref={form} onSubmit={handleSubmit} className="space-y-6">
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-[10px] text-gray-500 font-black tracking-widest uppercase mb-2">Ad Soyad</label>
-                    <input required type="text" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-white focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all" placeholder="Adınız Soyadınız" />
+                    <input name="user_name" required type="text" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-white focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all" placeholder="Adınız Soyadınız" />
                   </div>
                   <div>
                     <label className="block text-[10px] text-gray-500 font-black tracking-widest uppercase mb-2">Firma Adı (Opsiyonel)</label>
-                    <input type="text" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-white focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all" placeholder="Şirketiniz Ltd." />
+                    <input name="user_company" type="text" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-white focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all" placeholder="Şirketiniz Ltd." />
                   </div>
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                   <div>
                     <label className="block text-[10px] text-gray-500 font-black tracking-widest uppercase mb-2">E-Posta Adresi</label>
-                    <input required type="email" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-white focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all" placeholder="ornek@sirket.com" />
+                    <input name="user_email" required type="email" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-white focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all" placeholder="ornek@sirket.com" />
                   </div>
                   <div>
                     <label className="block text-[10px] text-gray-500 font-black tracking-widest uppercase mb-2">Konu</label>
-                    <select className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-gray-300 focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all">
-                      <option>Numune Talebi</option>
-                      <option>Özel Üretim</option>
-                      <option>Fiyat Teklifi</option>
-                      <option>Diğer</option>
+                    <select name="subject" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-gray-300 focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all">
+                      <option value="Numune Talebi">Numune Talebi</option>
+                      <option value="Özel Üretim">Özel Üretim</option>
+                      <option value="Fiyat Teklifi">Fiyat Teklifi</option>
+                      <option value="Diğer">Diğer</option>
                     </select>
                   </div>
                 </div>
 
                 <div>
                   <label className="block text-[10px] text-gray-500 font-black tracking-widest uppercase mb-2">Mesajınız</label>
-                  <textarea required rows="4" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-white focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all resize-none" placeholder="Projenizden bahsedin..."></textarea>
+                  <textarea name="message" required rows="4" className="w-full bg-[#111] border border-white/10 rounded-xl p-4 text-sm text-white focus:border-[#FF8A00] focus:ring-1 focus:ring-[#FF8A00] outline-none transition-all resize-none" placeholder="Projenizden bahsedin..."></textarea>
                 </div>
 
                 <button 

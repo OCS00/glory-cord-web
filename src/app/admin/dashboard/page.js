@@ -1,14 +1,32 @@
 // Dosya: src/app/admin/dashboard/page.js
 'use client';
-import { useState, useEffect } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
+import useSWR from 'swr'; // Yenilikçi veri çekme kütüphanesi
+import toast, { Toaster } from 'react-hot-toast'; // Modern bildirim sistemi
+
+// SWR için veriyi getiren standart fetcher fonksiyonu
+const fetcher = (url) => fetch(url).then((res) => res.json());
+
 
 export default function Dashboard() {
   const router = useRouter();
-  const [products, setProducts] = useState([]);
+  // (Mevcut statelerin hemen altına ekle)
+  // 🌟 YENİ: Arama ve Filtreleme Stateleri
+  const [searchTerm, setSearchTerm] = useState('');
+  const [filterCategory, setFilterCategory] = useState('Tümü');
+  
+  // SWR ENTEGRASYONU: Ürünleri otomatik çeker, önbellekler ve sayfayı yenilemeden günceller.
+  const { data, error, isLoading: isProductsLoading, mutate } = useSWR(
+    `/api/products?search=${searchTerm}&category=${filterCategory}`, 
+    fetcher
+  );
+  
+  const products = data?.products || [];
+
   const [isLoading, setIsLoading] = useState(false);
-  const [message, setMessage] = useState({ text: '', type: '' });
+  const [uploadingImage, setUploadingImage] = useState(false);
 
   // Form Stateleri
   const [formData, setFormData] = useState({
@@ -19,75 +37,61 @@ export default function Dashboard() {
     image: ''
   });
 
-  const [uploadingImage, setUploadingImage] = useState(false);
-
-  // Sayfa açıldığında ürünleri çek
-  useEffect(() => {
-    fetchProducts();
-  }, []);
-
-  const fetchProducts = async () => {
-    try {
-      const res = await fetch('/api/products');
-      const data = await res.json();
-      if (data.success) {
-        setProducts(data.products);
-      }
-    } catch (error) {
-      console.error("Ürünler çekilemedi:", error);
-    }
-  };
-
   // 🌟 GERÇEK CLOUDINARY RESİM YÜKLEME 🌟
   const handleImageUpload = async (e) => {
     const file = e.target.files[0];
     if (!file) return;
 
     setUploadingImage(true);
-    setMessage({ text: 'Görsel buluta fırlatılıyor...', type: 'loading' });
+    
+    // toast.promise ile yükleme sürecini animasyonlu şık bir bildirime dönüştürüyoruz
+    const uploadPromise = new Promise(async (resolve, reject) => {
+      const CLOUD_NAME = 'dkt0xqpv3'; 
+      const UPLOAD_PRESET = 'glory_resimler'; 
 
-    // Cloudinary ayarları
-    const CLOUD_NAME = 'dkt0xqpv3'; // Buraya kendi Cloud Name'ini yaz
-    const UPLOAD_PRESET = 'glory_resimler'; // Buraya Upload Preset adını yaz (Örn: glory_resimler)
+      const imageFormData = new FormData();
+      imageFormData.append('file', file);
+      imageFormData.append('upload_preset', UPLOAD_PRESET);
+      imageFormData.append('cloud_name', CLOUD_NAME);
 
-    const imageFormData = new FormData();
-    imageFormData.append('file', file);
-    imageFormData.append('upload_preset', UPLOAD_PRESET);
-    imageFormData.append('cloud_name', CLOUD_NAME);
+      try {
+        const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
+          method: 'POST',
+          body: imageFormData,
+        });
+        const uploadedImageData = await response.json();
 
-    try {
-      // Cloudinary'nin gerçek API'sine resmi gönderiyoruz
-      const response = await fetch(`https://api.cloudinary.com/v1_1/${CLOUD_NAME}/image/upload`, {
-        method: 'POST',
-        body: imageFormData,
-      });
-
-      const uploadedImageData = await response.json();
-
-      // Cloudinary bize resmin sonsuza dek saklanacağı güvenli linki (secure_url) veriyor!
-      if (uploadedImageData.secure_url) {
-        setFormData({ ...formData, image: uploadedImageData.secure_url });
-        setMessage({ text: 'Görsel buluta başarıyla yüklendi!', type: 'success' });
-      } else {
-        setMessage({ text: 'Görsel yüklenirken bir hata oluştu.', type: 'error' });
+        if (uploadedImageData.secure_url) {
+          setFormData(prev => ({ ...prev, image: uploadedImageData.secure_url }));
+          resolve();
+        } else {
+          reject('Bağlantı hatası');
+        }
+      } catch (err) {
+        reject(err);
+      } finally {
+        setUploadingImage(false);
       }
-    } catch (error) {
-      setMessage({ text: 'Bulut sunucusuna bağlanılamadı!', type: 'error' });
-    } finally {
-      setUploadingImage(false);
-    }
+    });
+
+    toast.promise(uploadPromise, {
+      loading: 'Görsel buluta fırlatılıyor...',
+      success: 'Görsel başarıyla yüklendi! 📸',
+      error: 'Görsel yüklenirken hata oluştu.',
+    }, {
+      style: { minWidth: '250px', background: '#111', color: '#fff', border: '1px solid #333' }
+    });
   };
 
-  // Yeni Ürün Ekleme
+  // Yeni Ürün Ekleme (POST)
   const handleSubmit = async (e) => {
     e.preventDefault();
     if (!formData.image) {
-      setMessage({ text: 'Lütfen bir ürün görseli yükleyin!', type: 'error' });
+      toast.error('Lütfen bir ürün görseli yükleyin!', { style: { background: '#111', color: '#fff' }});
       return;
     }
 
     setIsLoading(true);
-    setMessage({ text: 'Ürün vitrine ekleniyor...', type: 'loading' });
 
     try {
       const res = await fetch('/api/products', {
@@ -96,24 +100,26 @@ export default function Dashboard() {
         body: JSON.stringify(formData),
       });
 
-      const data = await res.json();
+      const result = await res.json();
 
-      if (data.success) {
-        setMessage({ text: 'Ürün başarıyla vitrine eklendi!', type: 'success' });
+      if (result.success) {
+        toast.success('Ürün başarıyla vitrine eklendi! 🚀', { style: { background: '#111', color: '#fff' }});
         setFormData({ name: '', category: 'Metal Uç', color: '', tag: '', image: '' });
-        fetchProducts(); // Listeyi güncelle
+        // SWR'ın mutate fonksiyonu: Veritabanını yormadan ekranı anında günceller
+        mutate(); 
       } else {
-        setMessage({ text: 'Hata: ' + data.error, type: 'error' });
+        toast.error('Hata: ' + result.error, { style: { background: '#111', color: '#fff' }});
       }
     } catch (error) {
-      setMessage({ text: 'Bir şeyler ters gitti.', type: 'error' });
+      toast.error('Bir şeyler ters gitti.', { style: { background: '#111', color: '#fff' }});
     } finally {
       setIsLoading(false);
     }
   };
 
-  // 🌟 YENİ: ÜRÜN SİLME FONKSİYONU 🌟
+  // Ürün Silme (DELETE)
   const handleDelete = async (id) => {
+    // Sadece tarayıcı onayı değil, özel tasarımlı toast (Bildirim) da eklenebilir ileride
     const isConfirmed = window.confirm('Bu ürünü vitrinden kalıcı olarak silmek istediğinize emin misiniz?');
     if (!isConfirmed) return;
 
@@ -122,29 +128,30 @@ export default function Dashboard() {
         method: 'DELETE',
       });
       
-      const data = await res.json();
-      if (data.success) {
-        setMessage({ text: 'Ürün vitrinden silindi!', type: 'success' });
-        fetchProducts(); // Listeyi güncelle
+      const result = await res.json();
+      if (result.success) {
+        toast.success('Ürün vitrinden tamamen silindi.', { style: { background: '#111', color: '#fff' }});
+        mutate(); // Ekrandaki listeyi anında güncelle
       } else {
-        setMessage({ text: 'Silme işlemi başarısız!', type: 'error' });
+        toast.error('Silme işlemi başarısız!', { style: { background: '#111', color: '#fff' }});
       }
     } catch (error) {
-      setMessage({ text: 'Silme sırasında hata oluştu.', type: 'error' });
+      toast.error('Silme sırasında hata oluştu.', { style: { background: '#111', color: '#fff' }});
     }
   };
 
-  const handleLogout = () => {
-    router.push('/admin');
-  };
+  const handleLogout = () => router.push('/admin');
 
   return (
     <div className="min-h-screen bg-[#050505] text-white font-sans selection:bg-[#FF8A00] selection:text-black pb-20">
       
+      {/* MODERN BİLDİRİM SİSTEMİ BİLEŞENİ */}
+      <Toaster position="top-right" reverseOrder={false} />
+
       {/* ÜST BAR (NAVBAR) */}
-      <nav className="bg-[#111] border-b border-white/5 px-6 py-4 sticky top-0 z-50 flex justify-between items-center">
+      <nav className="bg-[#111] border-b border-white/5 px-6 py-4 sticky top-0 z-50 flex justify-between items-center backdrop-blur-md bg-opacity-80">
         <div className="flex items-center gap-4">
-          <div className="w-10 h-10 bg-[#FF8A00]/10 border border-[#FF8A00]/30 rounded-xl flex items-center justify-center text-[#FF8A00] font-black text-xl">GC</div>
+          <div className="w-10 h-10 bg-[#FF8A00]/10 border border-[#FF8A00]/30 rounded-xl flex items-center justify-center text-[#FF8A00] font-black text-xl shadow-[0_0_15px_rgba(255,138,0,0.2)]">GC</div>
           <h1 className="text-xl font-black tracking-widest uppercase">Komuta Merkezi</h1>
         </div>
         <div className="flex items-center gap-6">
@@ -163,38 +170,34 @@ export default function Dashboard() {
         <div className="lg:col-span-4">
           <div className="bg-[#111]/50 backdrop-blur-xl border border-white/5 p-8 rounded-3xl sticky top-28 shadow-2xl">
             <h2 className="text-2xl font-black mb-6 flex items-center gap-3">
-              <span className="text-[#FF8A00]">✦</span> Yeni Ürün Ekle
+              <span className="text-[#FF8A00] animate-pulse">✦</span> Yeni Ürün Ekle
             </h2>
 
-            {message.text && (
-              <div className={`p-4 rounded-xl mb-6 text-xs font-bold tracking-widest uppercase text-center 
-                ${message.type === 'success' ? 'bg-green-500/10 text-green-500 border border-green-500/30' : 
-                  message.type === 'loading' ? 'bg-blue-500/10 text-blue-500 border border-blue-500/30' : 
-                  'bg-red-500/10 text-red-500 border border-red-500/30'}`}>
-                {message.text}
-              </div>
-            )}
-
             <form onSubmit={handleSubmit} className="space-y-5">
-              
               {/* DOSYA YÜKLEME ALANI */}
-              <div className="relative border-2 border-dashed border-white/20 rounded-2xl p-6 text-center hover:border-[#FF8A00] transition-colors group cursor-pointer bg-[#050505]">
+              <div className={`relative border-2 border-dashed ${formData.image ? 'border-[#FF8A00]' : 'border-white/20'} rounded-2xl p-6 text-center hover:border-[#FF8A00] transition-colors group cursor-pointer bg-[#050505] overflow-hidden`}>
                 <input 
                   type="file" 
                   accept="image/*" 
                   onChange={handleImageUpload} 
-                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
+                  className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-20"
                 />
-                <div className="flex flex-col items-center justify-center gap-2">
-                  <span className="text-3xl group-hover:text-[#FF8A00] transition-colors">📸</span>
-                  <p className="text-xs font-bold text-gray-400 tracking-widest uppercase group-hover:text-white transition-colors">
-                    {uploadingImage ? 'Yükleniyor...' : formData.image ? 'Görsel Seçildi! Değiştir' : 'Görsel Seç veya Sürükle'}
+                
+                {/* Resim Önizlemesi */}
+                {formData.image && (
+                  <div className="absolute inset-0 z-0 bg-cover bg-center" style={{ backgroundImage: `url(${formData.image})` }}>
+                    <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors"></div>
+                  </div>
+                )}
+
+                <div className="relative z-10 flex flex-col items-center justify-center gap-2">
+                  <span className={`text-3xl transition-transform ${uploadingImage ? 'animate-bounce' : 'group-hover:scale-110'}`}>
+                    {formData.image ? '✨' : '📸'}
+                  </span>
+                  <p className="text-xs font-bold text-gray-300 tracking-widest uppercase group-hover:text-white transition-colors">
+                    {uploadingImage ? 'İşleniyor...' : formData.image ? 'Değiştirmek İçin Tıkla' : 'Görsel Seç veya Sürükle'}
                   </p>
                 </div>
-                {/* Seçilen Görselin Önizlemesi */}
-                {formData.image && (
-                  <div className="absolute inset-0 z-0 opacity-40 bg-cover bg-center rounded-2xl" style={{ backgroundImage: `url(${formData.image})` }}></div>
-                )}
               </div>
 
               <div>
@@ -209,7 +212,7 @@ export default function Dashboard() {
                   <option value="Silikon Uç">Silikon Uç</option>
                   <option value="Plastik Uç">Plastik Uç</option>
                   <option value="Özel Kalıp">Özel Kalıp</option>
-                  <option value="Doğal">Doğal İplik</option>
+                  <option value="Doğal İplik">Doğal İplik</option>
                 </select>
               </div>
 
@@ -224,8 +227,8 @@ export default function Dashboard() {
                 </div>
               </div>
 
-              <button disabled={isLoading || uploadingImage} type="submit" className="w-full mt-4 bg-[#FF8A00] text-black font-black text-xs tracking-[0.2em] uppercase py-4 rounded-xl hover:bg-white transition-all disabled:opacity-50 shadow-[0_0_20px_rgba(255,138,0,0.2)] hover:shadow-[0_0_40px_rgba(255,138,0,0.5)]">
-                {isLoading ? 'Yükleniyor...' : 'Kataloğa Ekle'}
+              <button disabled={isLoading || uploadingImage} type="submit" className="w-full mt-4 bg-[#FF8A00] text-black font-black text-xs tracking-[0.2em] uppercase py-4 rounded-xl hover:bg-white transition-all disabled:opacity-50 disabled:cursor-not-allowed shadow-[0_0_20px_rgba(255,138,0,0.2)] hover:shadow-[0_0_40px_rgba(255,138,0,0.5)] active:scale-95">
+                {isLoading ? 'Ekleniyor...' : 'Kataloğa Ekle'}
               </button>
             </form>
           </div>
@@ -234,38 +237,84 @@ export default function Dashboard() {
         {/* SAĞ: MEVCUT ÜRÜNLER LİSTESİ */}
         <div className="lg:col-span-8">
           <div className="bg-[#111]/30 border border-white/5 rounded-3xl p-8">
-            <div className="flex justify-between items-end mb-8">
+            
+            {/* ÜST BİLGİ VE ARAMA/FİLTRE ÇUBUĞU */}
+            <div className="flex flex-col md:flex-row justify-between items-start md:items-end gap-4 mb-8 border-b border-white/5 pb-6">
               <div>
                 <h2 className="text-2xl font-black mb-1 flex items-center gap-3">Yayındaki Ürünler</h2>
-                <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">Vitrin canlı olarak güncellenmektedir.</p>
+                <p className="text-gray-500 text-xs font-bold tracking-widest uppercase">Canlı veritabanı bağlantısı aktif.</p>
               </div>
-              <div className="px-4 py-2 bg-[#FF8A00]/10 text-[#FF8A00] border border-[#FF8A00]/30 rounded-lg text-xs font-black tracking-widest">
-                TOPLAM: {products.length}
+              
+              {/* YENİ: Arama ve Kategori Filtresi */}
+              <div className="flex flex-col sm:flex-row gap-3 w-full md:w-auto">
+                <input 
+                  type="text" 
+                  placeholder="Ürün Ara..." 
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-[#050505] border border-white/10 rounded-xl px-4 py-2 text-sm text-white focus:border-[#FF8A00] outline-none transition-all w-full sm:w-48 placeholder:text-gray-600"
+                />
+                
+                <select 
+                  value={filterCategory}
+                  onChange={(e) => setFilterCategory(e.target.value)}
+                  className="bg-[#050505] border border-white/10 rounded-xl px-4 py-2 text-sm text-gray-300 focus:border-[#FF8A00] outline-none transition-all w-full sm:w-40"
+                >
+                  <option value="Tümü">Tüm Kategoriler</option>
+                  <option value="Metal Uç">Metal Uç</option>
+                  <option value="Silikon Uç">Silikon Uç</option>
+                  <option value="Plastik Uç">Plastik Uç</option>
+                  <option value="Özel Kalıp">Özel Kalıp</option>
+                  <option value="Doğal İplik">Doğal İplik</option>
+                </select>
+
+                <div className="px-4 py-2 bg-[#FF8A00]/10 text-[#FF8A00] border border-[#FF8A00]/30 rounded-xl text-xs font-black tracking-widest flex items-center justify-center shrink-0">
+                  TOPLAM: {products.length}
+                </div>
               </div>
             </div>
 
-            {products.length === 0 ? (
+            {/* Yükleme Ekranı İskeleti (Buradan sonrası senin kodunla aynı kalacak...) */}
+
+            {/* Yükleme Ekranı İskeleti (Skeleton) */}
+            {isProductsLoading ? (
+               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                 {[1, 2, 3, 4].map((skeleton) => (
+                    <div key={skeleton} className="bg-[#050505] border border-white/5 rounded-2xl h-32 animate-pulse flex">
+                      <div className="w-1/3 bg-gray-800/50"></div>
+                      <div className="w-2/3 p-4 flex flex-col justify-center gap-3">
+                         <div className="h-3 w-1/4 bg-gray-700 rounded"></div>
+                         <div className="h-4 w-3/4 bg-gray-600 rounded"></div>
+                         <div className="h-2 w-1/2 bg-gray-700 rounded mt-2"></div>
+                      </div>
+                    </div>
+                 ))}
+               </div>
+            ) : error ? (
+              <div className="text-center py-10 text-red-500 font-bold border border-red-500/20 rounded-2xl bg-red-500/5">
+                 Ürünler sunucudan çekilirken hata oluştu.
+              </div>
+            ) : products.length === 0 ? (
               <div className="text-center py-20 border border-dashed border-white/10 rounded-2xl">
-                <span className="text-4xl mb-4 block opacity-50">📦</span>
+                <span className="text-4xl mb-4 block opacity-50 grayscale">📦</span>
                 <p className="text-gray-500 font-medium">Henüz ürün eklenmemiş.</p>
-                <p className="text-gray-600 text-xs mt-2">Sol taraftaki formu kullanarak ilk kordonunuzu vitrine ekleyin.</p>
+                <p className="text-gray-600 text-[10px] uppercase tracking-widest mt-2">Sistemi başlatmak için ilk kordonunuzu ekleyin.</p>
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {products.map((product) => (
-                  <div key={product._id} className="bg-[#050505] border border-white/5 rounded-2xl overflow-hidden flex group hover:border-[#FF8A00]/30 transition-all relative">
+                  <div key={product._id} className="bg-[#050505] border border-white/5 rounded-2xl overflow-hidden flex group hover:border-[#FF8A00]/30 transition-all relative shadow-lg hover:shadow-[0_10px_30px_rgba(255,138,0,0.1)]">
                     
-                    {/* 🌟 YENİ: SİLME BUTONU 🌟 */}
                     <button 
                       onClick={() => handleDelete(product._id)}
-                      className="absolute top-2 right-2 w-8 h-8 bg-red-500/80 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-20 shadow-lg"
+                      className="absolute top-3 right-3 w-8 h-8 bg-black/80 border border-red-500/50 hover:bg-red-500 text-white rounded-full flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all z-20 hover:scale-110"
                       title="Ürünü Sil"
                     >
                       ✕
                     </button>
 
-                    <div className="w-1/3 h-32 bg-gray-800 relative overflow-hidden">
-                      <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-500" style={{ backgroundImage: `url('${product.image}')` }}></div>
+                    <div className="w-1/3 h-32 bg-[#0a0a0a] relative overflow-hidden">
+                      <div className="absolute inset-0 bg-cover bg-center group-hover:scale-110 transition-transform duration-700" style={{ backgroundImage: `url('${product.image}')` }}></div>
                     </div>
                     <div className="w-2/3 p-4 flex flex-col justify-center relative">
                       {product.tag && (
@@ -273,8 +322,8 @@ export default function Dashboard() {
                           {product.tag}
                         </span>
                       )}
-                      <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase mb-1">{product.category}</span>
-                      <h3 className="text-white font-bold text-sm mb-2 leading-tight">{product.name}</h3>
+                      <span className="text-gray-500 text-[9px] font-black tracking-widest uppercase mb-1">{product.category}</span>
+                      <h3 className="text-white font-bold text-sm mb-1 leading-tight">{product.name}</h3>
                       <p className="text-gray-400 text-xs">Renk: <span className="text-white">{product.color}</span></p>
                     </div>
                   </div>

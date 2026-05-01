@@ -100,7 +100,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="grid grid-cols-2 md:grid-cols-4 divide-y md:divide-y-0 md:divide-x divide-white/5">
             {[
-              { num: '1.5M+', text: 'Aylık Metre Üretim' },
+              { num: '2Milyon+', text: 'Aylık Metre Üretim' },
               { num: '100+', text: 'Farklı Ürün Türü' },
               { num: '%100', text: 'Özelleştirme İmkanı' },
               { num: '0', text: 'Hata Toleransı' }

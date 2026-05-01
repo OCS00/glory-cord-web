@@ -1,26 +1,17 @@
 // Dosya: src/models/Product.js
 import mongoose from 'mongoose';
 
-const ProductSchema = new mongoose.Schema({
-  name: {
-    type: String,
-    required: [true, 'Ürün adı zorunludur.'],
+const productSchema = new mongoose.Schema(
+  {
+    name: { type: String, required: true },
+    category: { type: String, required: true },
+    color: { type: String, required: true },
+    tag: { type: String }, // Opsiyonel olduğu için required koymadık
+    image: { type: String, required: true }
   },
-  category: {
-    type: String,
-    required: [true, 'Kategori zorunludur (Örn: Metal Uçlu, Silikon vb.).'],
-  },
-  color: {
-    type: String,
-    required: [true, 'Renk belirtilmelidir.'],
-  },
-  tag: {
-    type: String, // "ÇOK SATAN", "YENİ NESİL" gibi etiketler
-  },
-  image: {
-    type: String,
-    required: [true, 'Ürün fotoğrafı linki zorunludur.'],
-  },
-}, { timestamps: true }); // Ne zaman eklendiğini otomatik kaydeder
+  { timestamps: true }
+);
 
-export default mongoose.models.Product || mongoose.model('Product', ProductSchema);
+const Product = mongoose.models.Product || mongoose.model('Product', productSchema);
+
+export default Product;

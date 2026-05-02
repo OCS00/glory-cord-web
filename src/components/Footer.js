@@ -1,28 +1,26 @@
 // Dosya: src/components/Footer.js
-'use client'; // 🌟 İŞTE HATAYI ÇÖZEN SİHİRLİ DOKUNUŞ BURADA!
-
+'use client';
 import Link from 'next/link';
 
 export default function Footer() {
+  
   return (
-    <footer className="relative bg-[#050505] pt-24 overflow-hidden font-sans selection:bg-[#FF8A00] selection:text-black">
-      
-      {/* 🌟 ARKA PLAN DEV TİPOGRAFİ (Lüks Marka İmzası) 🌟 */}
+    <footer className="relative bg-[#050505] pt-10 md:pt-24 overflow-hidden font-sans selection:bg-[#FF8A00] selection:text-black">
       
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
         
         {/* ANA İÇERİK IZGARASI */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-16 lg:gap-8 pt-10 pb-20 border-t border-white/5">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-12 gap-8 lg:gap-8 pt-6 md:pt-10 pb-10 md:pb-20 border-t border-white/5 text-center md:text-left">
           
-          {/* 1. SÜTUN: Logo & Marka Felsefesi (5 Kolon) */}
-          <div className="lg:col-span-5 flex flex-col justify-between">
-            <div>
-              <Link href="/" className="inline-block mb-6 group">
+          {/* 1. SÜTUN: Logo & Marka Felsefesi */}
+          <div className="lg:col-span-5 flex flex-col justify-between items-center md:items-start">
+            <div className="flex flex-col items-center md:items-start">
+              <Link href="/" className="inline-block mb-4 md:mb-6 group">
                 <img 
                   src="/gloryy.png" 
                   alt="Glory Cord Logo" 
-                  className="h-12 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
+                  className="h-10 md:h-12 w-auto object-contain opacity-90 group-hover:opacity-100 transition-opacity duration-300"
                   onError={(e) => { 
                     e.target.onerror = null; 
                     e.target.src = ''; 
@@ -31,13 +29,14 @@ export default function Footer() {
                 />
               </Link>
               <p className="text-gray-500 text-[10px] font-bold uppercase tracking-[0.2em] leading-relaxed max-w-sm">
-                Endüstriyel Mükemmellik. <br/> Lüks Dokunuş.
+                Endüstriyel Mükemmellik. <br className="hidden md:block"/> Lüks Dokunuş.
               </p>
             </div>
 
-            <div className="mt-12">
+            <div className="mt-6 md:mt-12">
+              {/* 🌟 YENİ: INSTAGRAM LİNKİ ENTEGRE EDİLDİ 🌟 */}
               <a 
-                href="#" 
+                href="https://www.instagram.com/glorycordcom?utm_source=ig_web_button_share_sheet&igsh=ZDNlZDc0MzIxNw==" 
                 target="_blank" 
                 rel="noopener noreferrer" 
                 className="group inline-flex items-center gap-4 text-gray-500 hover:text-white transition-colors"
@@ -52,29 +51,29 @@ export default function Footer() {
             </div>
           </div>
 
-          {/* 2. SÜTUN: Navigasyon (3 Kolon) */}
-          <div className="lg:col-span-3 lg:col-start-7">
-            <h4 className="text-white font-black text-[9px] uppercase tracking-[0.3em] mb-8 border-l border-[#FF8A00] pl-3">Navigasyon</h4>
-            <ul className="space-y-5 flex flex-col text-[10px] font-bold tracking-widest uppercase text-gray-500">
+          {/* 2. SÜTUN: Navigasyon */}
+          <div className="lg:col-span-3 lg:col-start-7 flex flex-col items-center md:items-start">
+            <h4 className="text-white font-black text-[9px] uppercase tracking-[0.3em] mb-4 md:mb-8 border-b md:border-b-0 md:border-l border-[#FF8A00] pb-2 md:pb-0 md:pl-3 w-max">Navigasyon</h4>
+            <ul className="space-y-3 md:space-y-5 flex flex-col items-center md:items-start text-[10px] font-bold tracking-widest uppercase text-gray-500">
               <Link href="/" className="hover:text-white transition-colors w-max relative group flex items-center gap-2">
-                <span className="w-1 h-1 bg-transparent group-hover:bg-[#FF8A00] rounded-full transition-colors"></span>
+                <span className="hidden md:block w-1 h-1 bg-transparent group-hover:bg-[#FF8A00] rounded-full transition-colors"></span>
                 Ana Sayfa
               </Link>
               <Link href="/urunler" className="hover:text-white transition-colors w-max relative group flex items-center gap-2">
-                <span className="w-1 h-1 bg-transparent group-hover:bg-[#FF8A00] rounded-full transition-colors"></span>
+                <span className="hidden md:block w-1 h-1 bg-transparent group-hover:bg-[#FF8A00] rounded-full transition-colors"></span>
                 Koleksiyon
               </Link>
               <Link href="/hakkimizda" className="hover:text-white transition-colors w-max relative group flex items-center gap-2">
-                <span className="w-1 h-1 bg-transparent group-hover:bg-[#FF8A00] rounded-full transition-colors"></span>
+                <span className="hidden md:block w-1 h-1 bg-transparent group-hover:bg-[#FF8A00] rounded-full transition-colors"></span>
                 Manifesto
               </Link>
             </ul>
           </div>
 
-          {/* 3. SÜTUN: İletişim Bilgileri (3 Kolon) */}
-          <div className="lg:col-span-3">
-            <h4 className="text-white font-black text-[9px] uppercase tracking-[0.3em] mb-8 border-l border-[#FF8A00] pl-3">İletişim</h4>
-            <ul className="space-y-6 flex flex-col text-[10px] font-bold tracking-widest uppercase text-gray-500">
+          {/* 3. SÜTUN: İletişim Bilgileri */}
+          <div className="lg:col-span-3 flex flex-col items-center md:items-start">
+            <h4 className="text-white font-black text-[9px] uppercase tracking-[0.3em] mb-4 md:mb-8 border-b md:border-b-0 md:border-l border-[#FF8A00] pb-2 md:pb-0 md:pl-3 w-max">İletişim</h4>
+            <ul className="space-y-3 md:space-y-6 flex flex-col items-center md:items-start text-[10px] font-bold tracking-widest uppercase text-gray-500 text-center md:text-left">
               
               <li>
                 <span className="block text-gray-700 text-[8px] mb-1">E-POSTA</span>
@@ -95,7 +94,7 @@ export default function Footer() {
               <li>
                 <span className="block text-gray-700 text-[8px] mb-1">MERKEZ & FABRİKA</span>
                 <span className="text-gray-400 block leading-relaxed">
-                  Menderes Mah. 15 Temmuz <br/> Şehitler Ve Gaziler Cad.<br/> No: 1/4 Kahta / Adıyaman
+                  Menderes Mah. 15 Temmuz <br className="hidden md:block"/> Şehitler Ve Gaziler Cad.<br className="hidden md:block"/> No: 1/4 Kahta / Adıyaman
                 </span>
               </li>
 
@@ -105,7 +104,7 @@ export default function Footer() {
         </div>
 
         {/* 🌟 ALT ÇİZGİ: Telif Hakkı ve OCS Creative İmzası 🌟 */}
-        <div className="border-t border-white/5 py-8 flex flex-col md:flex-row justify-between items-center gap-6">
+        <div className="border-t border-white/5 py-4 md:py-8 flex flex-col md:flex-row justify-between items-center gap-3 md:gap-6 text-center md:text-left">
           
           <p className="text-[9px] font-black tracking-widest uppercase text-gray-600">
             © {new Date().getFullYear()} GLORY CORD. TÜM HAKLARI SAKLIDIR.
@@ -115,7 +114,7 @@ export default function Footer() {
             href="https://ocscreative.com.tr" 
             target="_blank" 
             rel="noopener noreferrer" 
-            className="flex items-center gap-1.5 group transition-all duration-300 text-[9px] font-black tracking-widest uppercase text-gray-600"
+            className="flex items-center justify-center gap-1.5 group transition-all duration-300 text-[9px] font-black tracking-widest uppercase text-gray-600"
           >
             CREATED BY 
             <span className="text-white group-hover:text-[#FF8A00] transition-colors relative ml-1">

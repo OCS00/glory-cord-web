@@ -2,14 +2,11 @@
 'use client';
 import Link from 'next/link';
 import Image from 'next/image';
-import { useState } from 'react';
 
 export default function Navbar() {
-  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-
   return (
     <>
-      {/* Sadece sarkaç kordonu için gerekli CSS */}
+      {/* Sadece sarkaç kordonu için gerekli CSS (Masaüstü animasyonu) */}
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes swing {
           0%, 100% { transform: rotate(-2deg); }
@@ -28,7 +25,7 @@ export default function Navbar() {
       {/* ANA NAVBAR */}
       <nav className="fixed top-0 left-0 w-full z-50 bg-[#050505]/80 backdrop-blur-2xl border-b border-white/5 transition-all duration-300">
         
-        {/* 🌟 İMZA DETAY: SALLANAN KORDON (Sadece Masaüstünde) 🌟 */}
+        {/* İMZA DETAY: SALLANAN KORDON (Sadece Masaüstünde görünür) */}
         <div className="hidden md:flex absolute left-12 top-full flex-col items-center pointer-events-none animate-swing z-50">
           <div className="w-[3px] h-12 braided-cord shadow-[0_0_10px_rgba(255,138,0,0.3)]"></div>
           <div className="w-2.5 h-8 bg-gradient-to-b from-gray-300 via-white to-gray-500 rounded-b-md shadow-[0_10px_20px_rgba(0,0,0,0.5)] relative border-t border-gray-400">
@@ -39,10 +36,10 @@ export default function Navbar() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
           <div className="flex justify-between items-center h-20 md:h-24">
             
-            {/* 🌟 YENİ LOGO ALANI (GÖRSEL + METİN YAN YANA) 🌟 */}
-            <div className="flex-shrink-0 flex items-center pl-0 md:pl-16 z-50">
-              <Link href="/" onClick={() => setIsMobileMenuOpen(false)} className="group flex items-center gap-3 md:gap-4">
-                {/* Sol Taraftaki Görsel Logo */}
+            {/* LOGO ALANI (Mobilde ve Masaüstünde Görünür) */}
+            <div className="flex-shrink-0 flex items-center pl-0 md:pl-16 z-50 w-full md:w-auto justify-center md:justify-start">
+              <Link href="/" className="group flex items-center gap-3 md:gap-4">
+                {/* Görsel Logo */}
                 <Image 
                   src="/gloryy.png" 
                   alt="Glory Cord Icon" 
@@ -51,14 +48,14 @@ export default function Navbar() {
                   priority
                   className="h-10 md:h-14 w-auto object-contain transform group-hover:scale-105 transition-transform duration-300"
                 />
-                {/* Sağ Taraftaki Metin */}
+                {/* Metin Logo */}
                 <span className="text-xl md:text-2xl font-black tracking-[0.15em] text-white">
                   GLORY<span className="text-[#FF8A00] ml-1">CORD</span>
                 </span>
               </Link>
             </div>
 
-            {/* MASAÜSTÜ MENÜ */}
+            {/* MASAÜSTÜ MENÜ (Sadece bilgisayarda görünür: hidden md:flex) */}
             <div className="hidden md:flex space-x-12 items-center">
               {[
                 { name: 'Ana Sayfa', path: '/' },
@@ -75,53 +72,13 @@ export default function Navbar() {
               ))}
             </div>
 
-            {/* MASAÜSTÜ BUTON */}
+            {/* MASAÜSTÜ BUTON (Sadece bilgisayarda görünür: hidden md:flex) */}
             <div className="hidden md:flex items-center">
               <Link href="/iletisim" className="px-8 py-3 bg-white text-black font-black text-[10px] uppercase tracking-[0.3em] rounded-full hover:bg-[#FF8A00] hover:text-black hover:shadow-[0_0_30px_rgba(255,138,0,0.4)] transition-all duration-300 transform hover:-translate-y-1 cursor-none">
                 Siparişi Başlat
               </Link>
             </div>
 
-            {/* MOBİL HAMBURGER BUTONU */}
-            <div className="md:hidden flex items-center z-50">
-              <button 
-                onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-                className="text-white focus:outline-none w-10 h-10 flex flex-col items-center justify-center gap-1.5"
-              >
-                <span className={`block w-6 h-[2px] bg-white transition-transform duration-300 ${isMobileMenuOpen ? 'rotate-45 translate-y-[8px] bg-[#FF8A00]' : ''}`}></span>
-                <span className={`block w-6 h-[2px] bg-white transition-opacity duration-300 ${isMobileMenuOpen ? 'opacity-0' : ''}`}></span>
-                <span className={`block w-6 h-[2px] bg-white transition-transform duration-300 ${isMobileMenuOpen ? '-rotate-45 -translate-y-[8px] bg-[#FF8A00]' : ''}`}></span>
-              </button>
-            </div>
-
-          </div>
-        </div>
-
-        {/* MOBİL TAM EKRAN MENÜ */}
-        <div className={`fixed inset-0 bg-[#050505] z-40 transition-all duration-500 flex flex-col justify-center px-8 md:hidden ${isMobileMenuOpen ? 'opacity-100 visible translate-y-0' : 'opacity-0 invisible -translate-y-full'}`}>
-          <div className="flex flex-col space-y-8 text-left">
-            {[
-              { name: 'Ana Sayfa', path: '/' },
-              { name: 'Hakkımızda', path: '/hakkimizda' },
-              { name: 'Ürünler', path: '/urunler' },
-              { name: 'İletişim', path: '/iletisim' }
-            ].map((link, index) => (
-              <Link 
-                key={index} 
-                href={link.path} 
-                onClick={() => setIsMobileMenuOpen(false)}
-                className="text-4xl font-black text-white uppercase tracking-tighter hover:text-[#FF8A00] transition-colors border-b border-white/5 pb-4"
-              >
-                {link.name}
-              </Link>
-            ))}
-            <Link 
-              href="/iletisim" 
-              onClick={() => setIsMobileMenuOpen(false)}
-              className="mt-8 px-8 py-5 bg-[#FF8A00] text-black font-black text-xs uppercase tracking-[0.3em] rounded-full text-center"
-            >
-              Siparişi Başlat
-            </Link>
           </div>
         </div>
       </nav>

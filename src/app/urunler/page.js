@@ -1,17 +1,17 @@
-// Dosya: src/app/urunler/page.js
 'use client'; 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Urunler() {
+  // --- 1. DURUM YÖNETİMİ (STATES) ---
   const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
-  
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
 
+  // --- 2. ÖZEL İMLEÇ TAKİBİ ---
   useEffect(() => {
     const handleMouseMove = (e) => {
       setMousePos({ x: e.clientX, y: e.clientY });
@@ -20,13 +20,14 @@ export default function Urunler() {
     return () => window.removeEventListener('mousemove', handleMouseMove);
   }, []);
 
+  // --- 3. VERİ ÇEKME (FETCHING) ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
         const res = await fetch('/api/products');
         const data = await res.json();
         if (data.success) {
-          setProducts(data.products);
+          setProducts(data.products || []);
         }
       } catch (error) {
         console.error("Ürünler çekilemedi:", error);
@@ -37,32 +38,47 @@ export default function Urunler() {
     fetchProducts();
   }, []);
 
-  // 🌟 YENİ NESİL ZEKİ FİLTRELEME 🌟
-  // Veritabanındaki ürünlerin kategorilerini tarar, tekrarlayanları siler ve butonları oluşturur.
+  // --- 4. FİLTRELEME MANTIĞI ---
+  // Mevcut ürünlerden benzersiz kategorileri ayıklar
   const dynamicCategories = ['Tümü', ...new Set(products.map(item => item.category))];
 
-  // Seçili kategoriye göre ürünleri filtrele
+  // Seçili kategoriye göre listeyi süzer
   const filteredProducts = selectedCategory === 'Tümü' 
     ? products 
     : products.filter(product => product.category === selectedCategory);
 
+  // --- 5. ANİMASYON TANIMLARI (VARIANTS) ---
+  // Kapsayıcı (Container) için animasyon ayarları
   const containerVariants = {
     hidden: { opacity: 0 },
     show: {
       opacity: 1,
-      transition: { staggerChildren: 0.1 }
+      transition: { staggerChildren: 0.1 } // Çocuklar 0.1 saniye arayla belirir
     }
   };
 
+  // Tekil kartlar için animasyon ayarları
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
   };
 
+  // Sayfa geneli geçiş animasyonu (FadeUp)
+  const fadeUp = {
+    hidden: { opacity: 0, y: 40 },
+    visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
+  };
+
+  // Kapsayıcı gecikmeli belirme (Stagger)
+  const staggerContainer = {
+    hidden: { opacity: 0 },
+    visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
+  };
+
   return (
     <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black cursor-none font-sans overflow-x-hidden">
       
-      {/* İMLEÇ */}
+      {/* İMLEÇ (Sadece Masaüstü) */}
       <div 
         className="fixed top-0 left-0 w-2 h-2 bg-[#FF8A00] rounded-full pointer-events-none z-[100] mix-blend-difference hidden md:block"
         style={{ transform: `translate3d(${mousePos.x - 4}px, ${mousePos.y - 4}px, 0)` }}
@@ -78,7 +94,7 @@ export default function Urunler() {
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
       `}} />
 
-      {/* HERO */}
+      {/* HERO BÖLÜMÜ */}
       <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden border-b border-white/5 flex items-center justify-center text-center">
         <motion.div 
           initial={{ scale: 1.2, opacity: 0 }}
@@ -132,7 +148,7 @@ export default function Urunler() {
         </div>
       </div>
 
-      {/* ÜRÜN VİTRİNİ */}
+      {/* ÜRÜN LİSTESİ */}
       <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[50vh]">
         
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
@@ -162,7 +178,7 @@ export default function Urunler() {
             animate="show"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
           >
-            <AnimatePresence>
+            <AnimatePresence mode='wait'>
               {filteredProducts.map((product) => (
                 <motion.div 
                   layout
@@ -213,18 +229,32 @@ export default function Urunler() {
         )}
       </section>
 
-      {/* FINAL CTA */}
-      <section className="relative py-24 md:py-40 border-t border-white/5 flex items-center justify-center text-center overflow-hidden">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15rem] sm:text-[20rem] md:text-[35rem] font-black text-[#FF8A00]/5 select-none pointer-events-none tracking-tighter leading-none w-full text-center">GC.</div>
+      {/* KAPANIŞ CTA (Call to Action) */}
+      <section className="relative py-16 md:py-24 border-t border-white/5 flex items-center justify-center bg-[#050505] overflow-hidden">
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8rem] md:text-[15rem] font-black text-[#FF8A00]/[0.03] select-none pointer-events-none tracking-tighter leading-none w-full text-center">GC.</div>
         
-        <div className="relative z-10 px-4 w-full">
-          <h2 className="text-4xl sm:text-5xl md:text-8xl font-black text-white mb-6 md:mb-8 tracking-tighter">İz Bırakmaya <br/> Hazır Mısınız?</h2>
-          <div onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
-            <Link href="/iletisim" className="inline-block px-10 md:px-14 py-5 md:py-6 bg-[#FF8A00] text-black rounded-full font-black text-xs md:text-sm tracking-[0.3em] uppercase shadow-[0_0_40px_rgba(255,138,0,0.4)] hover:shadow-[0_0_60px_rgba(255,138,0,0.6)] hover:bg-white transition-all transform hover:-translate-y-2">
+        <motion.div 
+          initial="hidden" 
+          whileInView="visible" 
+          viewport={{ once: true }} 
+          variants={staggerContainer} 
+          className="relative z-10 px-6 w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12"
+        >
+          <div className="text-center md:text-left">
+            <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">
+              İz Bırakmaya Hazır Mıyız?
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-gray-500 text-xs tracking-widest uppercase mt-3 font-bold">
+              Projeniz için üretim detaylarını konuşalım.
+            </motion.p>
+          </div>
+          
+          <motion.div variants={fadeUp} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} className="flex-shrink-0">
+            <Link href="/iletisim" className="inline-block px-8 py-4 bg-[#FF8A00] text-black rounded-full font-black text-[10px] md:text-xs tracking-[0.3em] uppercase shadow-[0_0_20px_rgba(255,138,0,0.2)] hover:shadow-[0_0_40px_rgba(255,138,0,0.4)] hover:bg-white transition-all transform hover:-translate-y-1">
               Projeyi Başlat
             </Link>
-          </div>
-        </div>
+          </motion.div>
+        </motion.div>
       </section>
 
     </div>

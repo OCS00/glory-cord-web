@@ -239,17 +239,36 @@ export default function Home() {
         </div>
       </div>
 
-      {/* ================= 8. FİNAL KAPANIŞ ================= */}
-      <section className="relative py-40 overflow-hidden flex items-center justify-center text-center bg-[#050505]">
-        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[15rem] md:text-[30rem] font-black text-[#FF8A00]/5 select-none pointer-events-none tracking-tighter leading-none w-full text-center">GC.</div>
+      {/* ================= 8. FİNAL KAPANIŞ (MİNİMAL VERSİYON) ================= */}
+      <section className="relative py-16 md:py-24 border-t border-white/5 flex items-center justify-center bg-[#050505] overflow-hidden">
         
-        <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="relative z-10 px-4 w-full">
-          <motion.h2 variants={fadeUp} className="text-5xl md:text-[7rem] font-black text-white mb-8 tracking-tighter leading-none">İz Bırakmaya <br/> Hazır Mısınız?</motion.h2>
-          <motion.div variants={fadeUp} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
-            <Link href="/iletisim" className="inline-block px-12 py-6 bg-[#FF8A00] text-black rounded-full font-black text-sm tracking-[0.3em] uppercase shadow-[0_0_40px_rgba(255,138,0,0.4)] hover:shadow-[0_0_60px_rgba(255,138,0,0.6)] hover:bg-white transition-all transform hover:-translate-y-2">
+        {/* Arka Plan "GC" Yazısı (Boyutu ve Opaklığı Küçültüldü) */}
+        <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8rem] md:text-[15rem] font-black text-[#FF8A00]/[0.03] select-none pointer-events-none tracking-tighter leading-none w-full text-center">GC.</div>
+        
+        <motion.div 
+          initial="hidden" 
+          whileInView="visible" 
+          viewport={{ once: true }} 
+          variants={staggerContainer} 
+          className="relative z-10 px-6 w-full max-w-7xl mx-auto flex flex-col md:flex-row items-center justify-between gap-8 md:gap-12"
+        >
+          {/* Sol Taraf: Başlık */}
+          <div className="text-center md:text-left">
+            <motion.h2 variants={fadeUp} className="text-3xl md:text-5xl font-black text-white tracking-tighter leading-tight">
+              İz Bırakmaya Hazır Mıyız?
+            </motion.h2>
+            <motion.p variants={fadeUp} className="text-gray-500 text-xs tracking-widest uppercase mt-3 font-bold">
+              Projeniz için üretim detaylarını konuşalım.
+            </motion.p>
+          </div>
+          
+          {/* Sağ Taraf: Buton (Daha zarif padding değerleriyle) */}
+          <motion.div variants={fadeUp} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} className="flex-shrink-0">
+            <Link href="/iletisim" className="inline-block px-8 py-4 bg-[#FF8A00] text-black rounded-full font-black text-[10px] md:text-xs tracking-[0.3em] uppercase shadow-[0_0_20px_rgba(255,138,0,0.2)] hover:shadow-[0_0_40px_rgba(255,138,0,0.4)] hover:bg-white transition-all transform hover:-translate-y-1">
               Projeyi Başlat
             </Link>
           </motion.div>
+          
         </motion.div>
       </section>
 

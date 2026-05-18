@@ -14,8 +14,8 @@ export default function AdminLogin() {
     e.preventDefault();
     
     // Şirket için geçici sabit şifre (Bunu değiştirebilirsin)
-    if (username === 'glory' && password === 'cord2026') {
-      // Şifre doğruysa ürün ekleme paneline (dashboard) yönlendir
+    const activePass = localStorage.getItem('gc_admin_pass') || 'cord2026';
+    if (username === 'glory' && password === activePass) {
       router.push('/admin/dashboard');
     } else {
       setError('Geçersiz yetki kodu. Lütfen tekrar deneyin.');

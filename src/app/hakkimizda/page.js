@@ -1,24 +1,10 @@
 // Dosya: src/app/hakkimizda/page.js
 'use client'; 
 import Link from 'next/link';
-import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function Hakkimizda() {
-  // --- 1. DEĞİŞKENLER VE DURUMLAR (STATE) ---
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-
-  // --- 2. FARE İMLECİ TAKİBİ ---
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  // --- 3. ANİMASYON AYARLARI (FRAMER MOTION) ---
+  // --- ANİMASYON AYARLARI (FRAMER MOTION) ---
   const fadeUp = {
     hidden: { opacity: 0, y: 50 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
@@ -30,17 +16,7 @@ export default function Hakkimizda() {
   };
 
   return (
-    <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black cursor-none font-sans overflow-x-hidden">
-      
-      {/* 🌟 LÜKS İMLEÇ 🌟 */}
-      <div 
-        className="fixed top-0 left-0 w-2 h-2 bg-[#FF8A00] rounded-full pointer-events-none z-[100] mix-blend-difference hidden md:block"
-        style={{ transform: `translate3d(${mousePos.x - 4}px, ${mousePos.y - 4}px, 0)` }}
-      ></div>
-      <div 
-        className={`fixed top-0 left-0 w-10 h-10 border border-[#FF8A00]/50 rounded-full pointer-events-none z-[99] transition-all duration-300 ease-out hidden md:block ${isHovering ? 'scale-[2.5] bg-[#FF8A00]/10 border-[#FF8A00]' : 'scale-100'}`}
-        style={{ transform: `translate3d(${mousePos.x - 20}px, ${mousePos.y - 20}px, 0)` }}
-      ></div>
+    <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black font-sans overflow-x-hidden">
 
       <style dangerouslySetInnerHTML={{__html: `
         .text-outline { color: transparent; -webkit-text-stroke: 1px rgba(255,138,0,0.8); }
@@ -53,7 +29,7 @@ export default function Hakkimizda() {
       `}} />
 
       {/* 1. SİNEMATİK HERO (GİRİŞ) */}
-      <section className="relative pt-32 pb-20 md:pt-48 md:pb-32 overflow-hidden border-b border-white/5 flex items-center justify-center text-center h-[80vh] md:h-screen">
+      <section className="relative pt-24 pb-20 md:pt-48 md:pb-32 overflow-hidden border-b border-white/5 flex items-center justify-center text-center min-h-[80svh] md:min-h-screen">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1605289355680-75fb41239154?auto=format&fit=crop&w=2070&q=80')] bg-cover bg-center opacity-30 mix-blend-luminosity animate-slow-pan"></div>
         <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/80 to-transparent"></div>
         <div className="absolute top-1/4 left-1/2 -translate-x-1/2 w-[600px] h-[600px] bg-[#FF8A00] opacity-10 rounded-full blur-[150px] pointer-events-none"></div>
@@ -102,8 +78,7 @@ export default function Hakkimizda() {
           <motion.div variants={fadeUp} className="w-full lg:w-1/2">
             <div 
               className="relative rounded-[2rem] overflow-hidden h-[400px] md:h-[600px] border border-white/10 group bg-[#111]"
-              onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}
-            >
+                         >
               {/* DİKKAT: Fabrika resmin buraya entegre edildi */}
               <div className="absolute inset-0 bg-[url('/fabrika.jpg')] bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0"></div>
               <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-transparent to-transparent opacity-80"></div>

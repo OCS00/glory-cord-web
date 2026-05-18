@@ -5,7 +5,7 @@ import Link from 'next/link';
 export default function Footer() {
   
   return (
-    <footer className="relative bg-[#050505] pt-10 md:pt-24 overflow-hidden font-sans selection:bg-[#FF8A00] selection:text-black">
+    <footer className="relative bg-[#050505] pt-10 md:pt-24 overflow-hidden font-sans selection:bg-[#FF8A00] selection:text-black pb-20 md:pb-0">
       
 
       <div className="max-w-7xl mx-auto px-6 sm:px-8 relative z-10">
@@ -61,11 +61,11 @@ export default function Footer() {
               </Link>
               <Link href="/urunler" className="hover:text-white transition-colors w-max relative group flex items-center gap-2">
                 <span className="hidden md:block w-1 h-1 bg-transparent group-hover:bg-[#FF8A00] rounded-full transition-colors"></span>
-                Koleksiyon
+                Ürünler
               </Link>
               <Link href="/hakkimizda" className="hover:text-white transition-colors w-max relative group flex items-center gap-2">
                 <span className="hidden md:block w-1 h-1 bg-transparent group-hover:bg-[#FF8A00] rounded-full transition-colors"></span>
-                Manifesto
+                Hakkımızda
               </Link>
             </ul>
           </div>

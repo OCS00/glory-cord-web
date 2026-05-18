@@ -1,1 +1,20 @@
 @import "tailwindcss";
+
+/* iOS safe area desteği */
+:root {
+  --sat: env(safe-area-inset-top);
+  --sab: env(safe-area-inset-bottom);
+}
+
+/* Mobilde seçim rengini kaldır (dokunmatik UX) */
+@media (max-width: 768px) {
+  * { -webkit-tap-highlight-color: transparent; }
+  html { touch-action: manipulation; }
+}
+
+/* Mobilde özel kaydırma çubuğunu gizle */
+.no-scrollbar::-webkit-scrollbar { display: none; }
+.no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+
+/* Metin dışına taşmayı engelle */
+* { word-break: break-word; }

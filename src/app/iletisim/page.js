@@ -1,24 +1,13 @@
 // Dosya: src/app/iletisim/page.js
 'use client';
-import { useState, useEffect, useRef } from 'react';
+import { useState, useRef } from 'react';
 import { motion } from 'framer-motion';
 // EmailJS paketini kodumuza dahil ediyoruz
 import emailjs from '@emailjs/browser';
 
 export default function Iletisim() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
-  const [formStatus, setFormStatus] = useState(''); // 'loading', 'success', 'error'
-  
-  // Formu referans almak için useRef kullanıyoruz
+  const [formStatus, setFormStatus] = useState('');
   const form = useRef();
-
-  // Özel İmleç Takibi
-  useEffect(() => {
-    const handleMouseMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   // Gerçek E-Posta Gönderme Fonksiyonu
   const handleSubmit = (e) => {
@@ -55,11 +44,7 @@ export default function Iletisim() {
   };
 
   return (
-    <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black cursor-none font-sans overflow-x-hidden pt-32 pb-20">
-      
-      {/* İMLEÇ */}
-      <div className="fixed top-0 left-0 w-2 h-2 bg-[#FF8A00] rounded-full pointer-events-none z-[100] mix-blend-difference hidden md:block" style={{ transform: `translate3d(${mousePos.x - 4}px, ${mousePos.y - 4}px, 0)` }}></div>
-      <div className={`fixed top-0 left-0 w-10 h-10 border border-[#FF8A00]/50 rounded-full pointer-events-none z-[99] transition-all duration-300 ease-out hidden md:block ${isHovering ? 'scale-[2.5] bg-[#FF8A00]/10 border-[#FF8A00]' : 'scale-100'}`} style={{ transform: `translate3d(${mousePos.x - 20}px, ${mousePos.y - 20}px, 0)` }}></div>
+    <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black font-sans overflow-x-hidden pt-24 md:pt-32 pb-20">
 
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         
@@ -89,7 +74,7 @@ export default function Iletisim() {
               <p className="text-gray-400 text-sm leading-relaxed mb-6 font-light">
                 Menderes Mah. 15 Temmuz <br/> Şehitler Ve Gaziler Cad.<br/> No: 1/4 Kahta / Adıyaman
               </p>
-              <a href="https://maps.google.com/?q=Menderes+Mah.+15+Temmuz+Şehitler+Ve+Gaziler+Cad.+No:+1/4+Kahta+/+Adıyaman" target="_blank" rel="noopener noreferrer" className="text-[#FF8A00] font-bold text-xs uppercase tracking-widest border-b border-[#FF8A00] pb-1 hover:text-white hover:border-white transition-colors w-max" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+              <a href="https://maps.google.com/?q=Menderes+Mah.+15+Temmuz+Şehitler+Ve+Gaziler+Cad.+No:+1/4+Kahta+/+Adıyaman" target="_blank" rel="noopener noreferrer" className="text-[#FF8A00] font-bold text-xs uppercase tracking-widest border-b border-[#FF8A00] pb-1 hover:text-white hover:border-white transition-colors w-max">
                 Haritada Gör →
               </a>
             </motion.div>
@@ -97,7 +82,7 @@ export default function Iletisim() {
             <motion.div variants={fadeUp} className="grid grid-cols-1 md:grid-cols-2 gap-6">
               
               {/* Telefon Kartı */}
-              <div className="bg-[#111] p-8 rounded-[2rem] border border-white/5 hover:border-[#FF8A00]/40 transition-all duration-500 group" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+              <div className="bg-[#111] p-8 rounded-[2rem] border border-white/5 hover:border-[#FF8A00]/40 transition-all duration-500 group">
                 <div className="text-[#FF8A00] text-2xl mb-4 transform group-hover:scale-110 transition-transform">📞</div>
                 <h3 className="text-lg font-black text-white mb-2">Müşteri Hattı</h3>
                 <a href="tel:+905318153611" className="text-gray-400 text-sm font-light hover:text-white transition-colors block">+90 (531) 815 36 11</a>
@@ -105,7 +90,7 @@ export default function Iletisim() {
               </div>
 
               {/* Mail Kartı */}
-              <div className="bg-[#111] p-8 rounded-[2rem] border border-white/5 hover:border-[#FF8A00]/40 transition-all duration-500 group" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+              <div className="bg-[#111] p-8 rounded-[2rem] border border-white/5 hover:border-[#FF8A00]/40 transition-all duration-500 group">
                 <div className="text-[#FF8A00] text-2xl mb-4 transform group-hover:scale-110 transition-transform">✉️</div>
                 <h3 className="text-lg font-black text-white mb-2">E-Posta</h3>
                 <a href="mailto:ibrahimhalilsahin1@gmail.com" className="text-gray-400 text-xs sm:text-sm font-light hover:text-white transition-colors block break-all">ibrahimhalilsahin1@gmail.com</a>

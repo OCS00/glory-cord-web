@@ -5,16 +5,8 @@ import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
 export default function Home() {
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
   const [latestProducts, setLatestProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
-
-  useEffect(() => {
-    const handleMouseMove = (e) => setMousePos({ x: e.clientX, y: e.clientY });
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
 
   useEffect(() => {
     const fetchLatestProducts = async () => {
@@ -42,17 +34,7 @@ export default function Home() {
   };
 
   return (
-    <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black cursor-none font-sans overflow-x-hidden">
-      
-      {/* İMLEÇ */}
-      <div 
-        className="fixed top-0 left-0 w-2 h-2 bg-[#FF8A00] rounded-full pointer-events-none z-[100] mix-blend-difference hidden md:block"
-        style={{ transform: `translate3d(${mousePos.x - 4}px, ${mousePos.y - 4}px, 0)` }}
-      ></div>
-      <div 
-        className={`fixed top-0 left-0 w-10 h-10 border border-[#FF8A00]/50 rounded-full pointer-events-none z-[99] transition-all duration-300 ease-out hidden md:block ${isHovering ? 'scale-[2.5] bg-[#FF8A00]/10 border-[#FF8A00]' : 'scale-100'}`}
-        style={{ transform: `translate3d(${mousePos.x - 20}px, ${mousePos.y - 20}px, 0)` }}
-      ></div>
+    <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black font-sans overflow-x-hidden">
 
       <style dangerouslySetInnerHTML={{__html: `
         @keyframes slowPan { 0%, 100% { transform: scale(1.05) translate(0, 0); } 50% { transform: scale(1.1) translate(-1%, 1%); } }
@@ -66,7 +48,7 @@ export default function Home() {
       `}} />
 
       {/* ================= 1. HERO ================= */}
-      <section className="relative h-screen flex items-center justify-center overflow-hidden w-full border-b border-white/5">
+      <section className="relative h-[100svh] flex items-center justify-center overflow-hidden w-full border-b border-white/5">
         <div className="absolute inset-0 bg-[url('https://images.unsplash.com/photo-1558717738-0b9fbb9b68ce?auto=format&fit=crop&w=2070&q=80')] bg-cover animate-slow-pan opacity-30 mix-blend-luminosity"></div>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,_transparent_0%,_#050505_90%)]"></div>
         <div className="absolute -top-[20%] -left-[10%] w-[800px] h-[800px] bg-[#FF8A00] opacity-10 rounded-full blur-[150px] pointer-events-none"></div>
@@ -85,7 +67,7 @@ export default function Home() {
             Dünyaca ünlü markaların tekstil koleksiyonlarını tamamlayan, milimetrik hassasiyetle dokunmuş kordon ve kordon ucu çözümleri.
           </motion.p>
           
-          <motion.div variants={fadeUp} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+          <motion.div variants={fadeUp}>
             <Link href="/urunler" className="group relative inline-flex items-center gap-6 px-10 py-5 bg-transparent border border-white/20 overflow-hidden rounded-full transition-all hover:border-[#FF8A00]">
               <span className="absolute inset-0 w-0 bg-[#FF8A00] transition-all duration-500 ease-out group-hover:w-full"></span>
               <span className="relative z-10 text-white group-hover:text-black font-black text-xs uppercase tracking-[0.3em] transition-colors">Koleksiyonu İncele</span>
@@ -105,7 +87,7 @@ export default function Home() {
               { num: '%100', text: 'Özelleştirme İmkanı' },
               { num: '0', text: 'Hata Toleransı' }
             ].map((stat, index) => (
-              <motion.div variants={fadeUp} key={index} className="py-8 md:py-16 px-4 text-center group cursor-default" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+              <motion.div variants={fadeUp} key={index} className="py-8 md:py-16 px-4 text-center group cursor-default">
                 <h3 className="text-4xl md:text-6xl font-black text-white group-hover:text-[#FF8A00] transition-colors duration-500 tracking-tighter mb-2">{stat.num}</h3>
                 <p className="text-gray-500 text-[10px] font-black tracking-widest uppercase">{stat.text}</p>
               </motion.div>
@@ -121,7 +103,7 @@ export default function Home() {
             <motion.h2 variants={fadeUp} className="text-[#FF8A00] font-black tracking-[0.3em] uppercase mb-4 text-xs">Canlı Vitrin</motion.h2>
             <motion.h3 variants={fadeUp} className="text-4xl md:text-5xl font-black text-white uppercase tracking-tighter">En Yeni <span className="text-gray-600">Üretimler.</span></motion.h3>
           </div>
-          <motion.div variants={fadeUp} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+          <motion.div variants={fadeUp}>
             <Link href="/urunler" className="text-xs font-black tracking-[0.2em] uppercase text-gray-400 hover:text-[#FF8A00] transition-colors flex items-center gap-2">
               Kataloğun Tamamı <span className="text-xl">→</span>
             </Link>
@@ -135,7 +117,7 @@ export default function Home() {
         ) : (
           <motion.div initial="hidden" whileInView="visible" viewport={{ once: true }} variants={staggerContainer} className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
             {latestProducts.map((product) => (
-              <motion.div variants={fadeUp} key={product._id} className="group bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/5 hover:border-[#FF8A00]/40 transition-colors shadow-lg" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+              <motion.div variants={fadeUp} key={product._id} className="group bg-[#0a0a0a] rounded-3xl overflow-hidden border border-white/5 hover:border-[#FF8A00]/40 transition-colors shadow-lg">
                 <div className="relative h-64 w-full overflow-hidden bg-[#111]">
                   <div className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110" style={{ backgroundImage: `url('${product.image}')` }}></div>
                   <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300"></div>
@@ -145,7 +127,7 @@ export default function Home() {
                   <div className="absolute top-0 left-0 w-0 h-[2px] bg-[#FF8A00] transition-all duration-500 group-hover:w-full"></div>
                   <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase mb-2 block">{product.category}</span>
                   <h4 className="text-lg font-black text-white mb-1 truncate">{product.name}</h4>
-                  <p className="text-gray-400 text-xs font-light">Renk: <span className="text-white font-bold">{product.color}</span></p>
+                  <p className="text-gray-400 text-xs font-light line-clamp-2">{product.description || 'Detaylar için tıklayın.'}</p>
                 </div>
               </motion.div>
             ))}
@@ -191,7 +173,7 @@ export default function Home() {
               { title: "Parlak Lurex (Sim)", desc: "Abiye ve lüks tasarımlar için metalik yansımalı özel simli dokumalar.", img: "https://images.unsplash.com/photo-1616080496155-256d059e0a29?auto=format&fit=crop&w=800&q=80" },
               { title: "Dayanıklı Polyester", desc: "Yüksek kopma direncine sahip, parlak ve endüstriyel standartta iplikler.", img: "https://images.unsplash.com/photo-1544022613-e87ca75a784a?auto=format&fit=crop&w=800&q=80" }
             ].map((mat, idx) => (
-              <motion.div variants={fadeUp} key={idx} className="group relative h-80 rounded-3xl overflow-hidden cursor-none" onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)}>
+              <motion.div variants={fadeUp} key={idx} className="group relative h-80 rounded-3xl overflow-hidden cursor-none">
                 <div className="absolute inset-0 bg-cover bg-center transition-transform duration-1000 group-hover:scale-110 grayscale group-hover:grayscale-0" style={{ backgroundImage: `url('${mat.img}')` }}></div>
                 <div className="absolute inset-0 bg-gradient-to-t from-[#050505] via-[#050505]/60 to-transparent"></div>
                 <div className="absolute bottom-0 left-0 p-8">
@@ -263,7 +245,7 @@ export default function Home() {
           </div>
           
           {/* Sağ Taraf: Buton (Daha zarif padding değerleriyle) */}
-          <motion.div variants={fadeUp} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} className="flex-shrink-0">
+          <motion.div variants={fadeUp} className="flex-shrink-0">
             <Link href="/iletisim" className="inline-block px-8 py-4 bg-[#FF8A00] text-black rounded-full font-black text-[10px] md:text-xs tracking-[0.3em] uppercase shadow-[0_0_20px_rgba(255,138,0,0.2)] hover:shadow-[0_0_40px_rgba(255,138,0,0.4)] hover:bg-white transition-all transform hover:-translate-y-1">
               Projeyi Başlat
             </Link>

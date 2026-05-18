@@ -1,26 +1,16 @@
+// Dosya: src/app/urunler/page.js
 'use client'; 
 import Link from 'next/link';
 import { useEffect, useState } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 
 export default function Urunler() {
-  // --- 1. DURUM YÖNETİMİ (STATES) ---
-  const [mousePos, setMousePos] = useState({ x: 0, y: 0 });
-  const [isHovering, setIsHovering] = useState(false);
   const [products, setProducts] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
   const [selectedCategory, setSelectedCategory] = useState('Tümü');
+  const [selectedProduct, setSelectedProduct] = useState(null);
+  const [sortBy, setSortBy] = useState('newest');
 
-  // --- 2. ÖZEL İMLEÇ TAKİBİ ---
-  useEffect(() => {
-    const handleMouseMove = (e) => {
-      setMousePos({ x: e.clientX, y: e.clientY });
-    };
-    window.addEventListener('mousemove', handleMouseMove);
-    return () => window.removeEventListener('mousemove', handleMouseMove);
-  }, []);
-
-  // --- 3. VERİ ÇEKME (FETCHING) ---
   useEffect(() => {
     const fetchProducts = async () => {
       try {
@@ -38,55 +28,47 @@ export default function Urunler() {
     fetchProducts();
   }, []);
 
-  // --- 4. FİLTRELEME MANTIĞI ---
-  // Mevcut ürünlerden benzersiz kategorileri ayıklar
   const dynamicCategories = ['Tümü', ...new Set(products.map(item => item.category))];
+  const filteredProducts = (selectedCategory === 'Tümü' ? products : products.filter(p => p.category === selectedCategory))
+    .slice()
+    .sort((a, b) => {
+      if (sortBy === 'newest') return new Date(b.createdAt) - new Date(a.createdAt);
+      if (sortBy === 'oldest') return new Date(a.createdAt) - new Date(b.createdAt);
+      if (sortBy === 'az') return a.name.localeCompare(b.name, 'tr');
+      if (sortBy === 'za') return b.name.localeCompare(a.name, 'tr');
+      return 0;
+    });
 
-  // Seçili kategoriye göre listeyi süzer
-  const filteredProducts = selectedCategory === 'Tümü' 
-    ? products 
-    : products.filter(product => product.category === selectedCategory);
-
-  // --- 5. ANİMASYON TANIMLARI (VARIANTS) ---
-  // Kapsayıcı (Container) için animasyon ayarları
   const containerVariants = {
     hidden: { opacity: 0 },
-    show: {
-      opacity: 1,
-      transition: { staggerChildren: 0.1 } // Çocuklar 0.1 saniye arayla belirir
-    }
+    show: { opacity: 1, transition: { staggerChildren: 0.1 } }
   };
 
-  // Tekil kartlar için animasyon ayarları
   const itemVariants = {
     hidden: { opacity: 0, y: 30 },
     show: { opacity: 1, y: 0, transition: { duration: 0.5, ease: "easeOut" } }
   };
 
-  // Sayfa geneli geçiş animasyonu (FadeUp)
   const fadeUp = {
     hidden: { opacity: 0, y: 40 },
     visible: { opacity: 1, y: 0, transition: { duration: 0.8, ease: "easeOut" } }
   };
 
-  // Kapsayıcı gecikmeli belirme (Stagger)
   const staggerContainer = {
     hidden: { opacity: 0 },
     visible: { opacity: 1, transition: { staggerChildren: 0.2 } }
   };
 
+  useEffect(() => {
+    if (selectedProduct) {
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+  }, [selectedProduct]);
+
   return (
-    <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black cursor-none font-sans overflow-x-hidden">
-      
-      {/* İMLEÇ (Sadece Masaüstü) */}
-      <div 
-        className="fixed top-0 left-0 w-2 h-2 bg-[#FF8A00] rounded-full pointer-events-none z-[100] mix-blend-difference hidden md:block"
-        style={{ transform: `translate3d(${mousePos.x - 4}px, ${mousePos.y - 4}px, 0)` }}
-      ></div>
-      <div 
-        className={`fixed top-0 left-0 w-10 h-10 border border-[#FF8A00]/50 rounded-full pointer-events-none z-[99] transition-all duration-300 ease-out hidden md:block ${isHovering ? 'scale-[2.5] bg-[#FF8A00]/10 border-[#FF8A00]' : 'scale-100'}`}
-        style={{ transform: `translate3d(${mousePos.x - 20}px, ${mousePos.y - 20}px, 0)` }}
-      ></div>
+    <div className="bg-[#050505] min-h-screen selection:bg-[#FF8A00] selection:text-black font-sans overflow-x-hidden">
 
       <style dangerouslySetInnerHTML={{__html: `
         .text-outline { color: transparent; -webkit-text-stroke: 1px rgba(255,138,0,0.8); }
@@ -127,7 +109,7 @@ export default function Urunler() {
       </section>
 
       {/* DİNAMİK KATEGORİ FİLTRELERİ */}
-      <div className="sticky top-[80px] md:top-[96px] z-40 bg-[#050505]/90 backdrop-blur-xl border-b border-white/5 py-4">
+      <div className="sticky top-16 md:top-24 z-40 bg-[#050505]/90 backdrop-blur-xl border-b border-white/5 py-4">
         <div className="max-w-7xl mx-auto px-4 overflow-x-auto no-scrollbar">
           <div className="flex items-center gap-2 md:justify-center w-max mx-auto pb-1">
             {!isLoading && dynamicCategories.map((cat) => (
@@ -150,11 +132,20 @@ export default function Urunler() {
 
       {/* ÜRÜN LİSTESİ */}
       <section className="py-16 md:py-24 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 min-h-[50vh]">
-        
         <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-10 gap-4">
           <p className="text-gray-500 font-bold text-xs tracking-widest uppercase">
             <span className="text-[#FF8A00] text-lg mr-2">{filteredProducts.length}</span> Ürün Bulundu
           </p>
+          <select
+            value={sortBy}
+            onChange={e => setSortBy(e.target.value)}
+            className="bg-[#0a0a0a] border border-white/10 rounded-xl px-4 py-2.5 text-xs text-gray-400 focus:border-[#FF8A00] outline-none transition-all font-bold tracking-widest uppercase cursor-pointer"
+          >
+            <option value="newest">En Yeni</option>
+            <option value="oldest">En Eski</option>
+            <option value="az">A → Z</option>
+            <option value="za">Z → A</option>
+          </select>
         </div>
 
         {isLoading ? (
@@ -178,30 +169,37 @@ export default function Urunler() {
             animate="show"
             className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6 md:gap-8"
           >
-            <AnimatePresence mode='wait'>
+            <AnimatePresence>
               {filteredProducts.map((product) => (
                 <motion.div 
                   layout
                   variants={itemVariants}
                   key={product._id} 
-                  className="group flex flex-col bg-[#0a0a0a] rounded-[2rem] overflow-hidden border border-white/5 hover:border-[#FF8A00]/40 transition-colors shadow-lg"
+                  className="group flex flex-col rounded-[2rem] overflow-hidden border border-white/10 hover:border-[#FF8A00]/50 transition-all shadow-lg cursor-pointer bg-[#0a0a0a]"
                   onMouseEnter={() => setIsHovering(true)} 
                   onMouseLeave={() => setIsHovering(false)}
+                  onClick={() => setSelectedProduct(product)} 
                 >
-                  <div className="relative h-64 sm:h-72 w-full overflow-hidden bg-[#111]">
+                  
+                  {/* 🌟 YENİ MİMARİ: TAM KAPSAMLI (COVER) GÖRSEL ALANI 🌟 */}
+                  <div className="relative w-full aspect-square bg-[#050505] overflow-hidden border-b border-white/5">
+                    
+                    {/* bg-contain yerine bg-cover kullanıldı. Boşluklar yok edildi! */}
                     <div 
                       className="absolute inset-0 bg-cover bg-center transition-transform duration-700 group-hover:scale-110"
                       style={{ backgroundImage: `url('${product.image}')` }}
                     ></div>
                     
-                    <div className="absolute inset-0 bg-black/20 group-hover:bg-black/40 transition-all duration-300"></div>
+                    {/* Siyah tema ile uyum için varsayılan hafif karanlık filtre, hoverda kalkar */}
+                    <div className="absolute inset-0 bg-black/30 group-hover:bg-transparent transition-all duration-500 pointer-events-none"></div>
                     
                     {product.tag && (
-                      <span className="absolute top-4 left-4 bg-[#FF8A00]/20 backdrop-blur-md border border-[#FF8A00]/50 text-[#FF8A00] px-3 py-1 rounded-full text-[9px] font-black tracking-widest z-10">
+                      <span className="absolute top-4 left-4 bg-[#FF8A00] text-black px-3 py-1 rounded-full text-[9px] font-black tracking-widest z-10 shadow-md">
                         {product.tag}
                       </span>
                     )}
 
+                    {/* Artı İkonu */}
                     <div className="absolute inset-0 flex items-center justify-center opacity-0 group-hover:opacity-100 transition-opacity duration-300">
                        <div className="w-12 h-12 rounded-full bg-[#FF8A00] flex items-center justify-center text-black font-bold transform translate-y-4 group-hover:translate-y-0 transition-transform duration-300 shadow-[0_0_20px_rgba(255,138,0,0.5)]">
                          +
@@ -209,19 +207,22 @@ export default function Urunler() {
                     </div>
                   </div>
 
-                  <div className="p-6 flex flex-col flex-grow relative">
-                    <div className="absolute top-0 left-0 w-0 h-[2px] bg-[#FF8A00] transition-all duration-500 group-hover:w-full"></div>
-                    
+                  {/* KARTIN ALT YARISI (Yazı Alanı) */}
+                  <div className="p-6 flex flex-col flex-grow relative bg-[#0a0a0a]">
                     <span className="text-gray-500 text-[10px] font-black tracking-widest uppercase mb-2">{product.category}</span>
                     <h3 className="text-lg font-black text-white mb-2 group-hover:text-[#FF8A00] transition-colors">{product.name}</h3>
-                    <p className="text-gray-400 text-xs font-light mb-4">Renk: <span className="text-white font-bold">{product.color}</span></p>
+                    
+                    <p className="text-gray-400 text-xs font-light mb-4 line-clamp-2">
+                      {product.description || "Bu ürün için henüz bir açıklama girilmemiş."}
+                    </p>
                     
                     <div className="mt-auto pt-4 border-t border-white/5 flex justify-between items-center">
-                      <Link href="/iletisim" className="text-xs font-bold text-gray-400 group-hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2">
-                        Numune İste <span className="text-[#FF8A00] group-hover:translate-x-1 transition-transform">→</span>
-                      </Link>
+                      <span className="text-xs font-bold text-gray-400 group-hover:text-white uppercase tracking-widest transition-colors flex items-center gap-2">
+                        Detayları İncele <span className="text-[#FF8A00] group-hover:translate-x-1 transition-transform">→</span>
+                      </span>
                     </div>
                   </div>
+
                 </motion.div>
               ))}
             </AnimatePresence>
@@ -229,7 +230,89 @@ export default function Urunler() {
         )}
       </section>
 
-      {/* KAPANIŞ CTA (Call to Action) */}
+      {/* POP-UP (MODAL) BÖLÜMÜ */}
+      <AnimatePresence>
+        {selectedProduct && (
+          <motion.div 
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            className="fixed inset-0 z-[120] flex items-center justify-center p-4 md:p-8 bg-black/80 backdrop-blur-md"
+            onClick={() => setSelectedProduct(null)} 
+          >
+            <motion.div 
+              initial={{ scale: 0.95, opacity: 0, y: 20 }}
+              animate={{ scale: 1, opacity: 1, y: 0 }}
+              exit={{ scale: 0.95, opacity: 0, y: 20 }}
+              transition={{ duration: 0.3, ease: "easeOut" }}
+              className="w-full max-w-5xl bg-[#0a0a0a] rounded-[2rem] border border-white/10 overflow-hidden flex flex-col md:flex-row shadow-[0_0_50px_rgba(0,0,0,0.8)] relative max-h-[90vh] md:max-h-[80vh]"
+              onClick={(e) => e.stopPropagation()} 
+              onMouseEnter={() => setIsHovering(true)} 
+              onMouseLeave={() => setIsHovering(false)}
+            >
+              
+              <button 
+                onClick={() => setSelectedProduct(null)}
+                className="absolute top-4 right-4 md:top-6 md:right-6 z-20 w-10 h-10 bg-black/20 hover:bg-[#FF8A00] text-white hover:text-black rounded-full flex items-center justify-center transition-colors border border-white/10 backdrop-blur-md"
+              >
+                ✕
+              </button>
+
+              {/* 🌟 YENİ MİMARİ: POP-UP SOL YARISI (Tam Kapsamlı Görsel) 🌟 */}
+              <div className="w-full md:w-1/2 aspect-square relative bg-[#050505] flex-shrink-0 border-b md:border-b-0 md:border-r border-white/10 overflow-hidden">
+                <div 
+                  className="absolute inset-0 bg-cover bg-center"
+                  style={{ backgroundImage: `url('${selectedProduct.image}')` }}
+                ></div>
+                {/* Çok hafif karanlık filtre, resmin çok parlamasını engeller */}
+                <div className="absolute inset-0 bg-black/10 pointer-events-none"></div>
+              </div>
+
+              {/* SAĞ Taraf: Lüks Açıklamalar */}
+              <div className="w-full md:w-1/2 p-8 md:p-12 flex flex-col justify-center overflow-y-auto">
+                
+                <div className="flex flex-wrap items-center gap-2 mb-4">
+                  <span className="bg-[#FF8A00]/20 text-[#FF8A00] border border-[#FF8A00]/30 px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase">
+                    {selectedProduct.category}
+                  </span>
+                  {selectedProduct.tag && (
+                    <span className="bg-white/10 text-white border border-white/20 px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase">
+                      {selectedProduct.tag}
+                    </span>
+                  )}
+                  {selectedProduct.code && (
+                    <span className="bg-blue-500/10 text-blue-400 border border-blue-500/20 px-3 py-1 rounded-full text-[9px] font-black tracking-widest uppercase">
+                      # {selectedProduct.code}
+                    </span>
+                  )}
+                </div>
+
+                <h2 className="text-3xl md:text-5xl font-black text-white mb-6 uppercase tracking-tighter leading-tight">
+                  {selectedProduct.name}
+                </h2>
+
+                <div className="w-12 h-1 bg-[#FF8A00] mb-6"></div>
+
+                <p className="text-gray-400 text-sm leading-relaxed font-light mb-10 whitespace-pre-wrap">
+                  {selectedProduct.description || "Bu tasarım için özel üretim detayları ve numune süreçleri hakkında bilgi almak için bizimle iletişime geçebilirsiniz."}
+                </p>
+
+                <div className="mt-auto">
+                  <Link 
+                    href="/iletisim"
+                    className="inline-block w-full text-center px-8 py-4 bg-white text-black rounded-full font-black text-[10px] tracking-[0.3em] uppercase shadow-[0_0_20px_rgba(255,255,255,0.1)] hover:shadow-[0_0_30px_rgba(255,138,0,0.4)] hover:bg-[#FF8A00] transition-all"
+                  >
+                    Numune & Üretim Talebi
+                  </Link>
+                </div>
+              </div>
+
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* KAPANIŞ CTA */}
       <section className="relative py-16 md:py-24 border-t border-white/5 flex items-center justify-center bg-[#050505] overflow-hidden">
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 text-[8rem] md:text-[15rem] font-black text-[#FF8A00]/[0.03] select-none pointer-events-none tracking-tighter leading-none w-full text-center">GC.</div>
         
@@ -249,7 +332,7 @@ export default function Urunler() {
             </motion.p>
           </div>
           
-          <motion.div variants={fadeUp} onMouseEnter={() => setIsHovering(true)} onMouseLeave={() => setIsHovering(false)} className="flex-shrink-0">
+          <motion.div variants={fadeUp} className="flex-shrink-0">
             <Link href="/iletisim" className="inline-block px-8 py-4 bg-[#FF8A00] text-black rounded-full font-black text-[10px] md:text-xs tracking-[0.3em] uppercase shadow-[0_0_20px_rgba(255,138,0,0.2)] hover:shadow-[0_0_40px_rgba(255,138,0,0.4)] hover:bg-white transition-all transform hover:-translate-y-1">
               Projeyi Başlat
             </Link>

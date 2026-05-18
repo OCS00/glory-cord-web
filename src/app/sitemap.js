@@ -2,7 +2,7 @@ import { connectToDatabase } from '@/lib/db';
 import Product from '@/models/Product';
 
 export default async function sitemap() {
-  const baseUrl = 'https://glorycord.com.tr';
+  const baseUrl = 'https://glorycord.com';
 
   const staticRoutes = [
     { url: baseUrl, lastModified: new Date(), changeFrequency: 'weekly', priority: 1 },

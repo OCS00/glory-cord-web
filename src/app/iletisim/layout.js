@@ -4,7 +4,7 @@ export const metadata = {
   openGraph: {
     title: 'İletişim | Glory Cord',
     description: 'Numune talebi, özel üretim veya fiyat teklifi için bizimle iletişime geçin.',
-    url: 'https://glorycord.com.tr/iletisim',
+    url: 'https://glorycord.com/iletisim',
   },
 };
 

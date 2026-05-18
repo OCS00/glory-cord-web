@@ -4,7 +4,7 @@ export const metadata = {
   openGraph: {
     title: 'Hakkımızda | Glory Cord',
     description: 'Yılların getirdiği endüstriyel tecrübeyi modern tasarım anlayışıyla harmanlayan Glory Cord\'un hikayesini keşfedin.',
-    url: 'https://glorycord.com.tr/hakkimizda',
+    url: 'https://glorycord.com/hakkimizda',
   },
 };
 

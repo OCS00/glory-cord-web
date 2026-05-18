@@ -16,7 +16,7 @@ const montserrat = Montserrat({
 });
 
 export const metadata = {
-  metadataBase: new URL('https://glorycord.com.tr'),
+  metadataBase: new URL('https://glorycord.com'),
   title: {
     default: 'GLORY CORD | Premium Kordon Üretimi',
     template: '%s | Glory Cord',
@@ -29,7 +29,7 @@ export const metadata = {
   openGraph: {
     type: 'website',
     locale: 'tr_TR',
-    url: 'https://glorycord.com.tr',
+    url: 'https://glorycord.com',
     siteName: 'Glory Cord',
     title: 'GLORY CORD | Premium Kordon Üretimi',
     description: 'Metal uçlu, silikon uçlu ve özel kalıp kordon çözümleri. Türkiye\'nin premium kordon üreticisi.',

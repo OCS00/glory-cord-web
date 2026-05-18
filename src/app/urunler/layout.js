@@ -4,7 +4,7 @@ export const metadata = {
   openGraph: {
     title: 'Ürün Koleksiyonu | Glory Cord',
     description: 'Tüm kordon kategorilerini keşfedin. Metal uçlu, silikon uçlu, özel kalıp ve doğal iplik seçenekleri.',
-    url: 'https://glorycord.com.tr/urunler',
+    url: 'https://glorycord.com/urunler',
   },
 };
 

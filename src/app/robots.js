@@ -7,6 +7,6 @@ export default function robots() {
         disallow: ['/admin', '/admin/'],
       },
     ],
-    sitemap: 'https://glorycord.com.tr/sitemap.xml',
+    sitemap: 'https://glorycord.com/sitemap.xml',
   };
 }

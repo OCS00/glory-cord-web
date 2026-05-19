@@ -99,6 +99,13 @@ export const metadata = {
     follow: true,
     googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
   },
+  icons: {
+    icon: [
+      { url: '/favicon.ico' },
+      { url: '/gloryy.png', type: 'image/png' },
+    ],
+    apple: '/gloryy.png',
+  },
 };
 
 export default function RootLayout({ children }) {

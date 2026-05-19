@@ -1,9 +1,10 @@
 export const metadata = {
-  title: 'Koleksiyon',
-  description: 'Metal uçlu, silikon uçlu, plastik uçlu ve özel kalıp kordon koleksiyonumuzu inceleyin. Markanıza özel premium tekstil kordon çözümleri.',
+  title: 'Kordon Koleksiyonu — Metal Uçlu, Silikon Uçlu, Yuvarlak & Yassı Kordon',
+  description: 'Metal uçlu kordon, silikon uçlu kordon, yuvarlak kordon, yassı kordon, elastik kordon ve özel kalıp çözümleri. Polyester, pamuk ve naylon iplik seçenekleriyle markanıza özel üretim.',
+  keywords: ['kordon çeşitleri', 'metal uçlu kordon', 'silikon uçlu kordon', 'yuvarlak kordon', 'yassı kordon', 'elastik kordon', 'özel kalıp kordon', 'polyester kordon', 'pamuk kordon', 'toptan kordon'],
   openGraph: {
-    title: 'Ürün Koleksiyonu | Glory Cord',
-    description: 'Tüm kordon kategorilerini keşfedin. Metal uçlu, silikon uçlu, özel kalıp ve doğal iplik seçenekleri.',
+    title: 'Kordon Koleksiyonu — Metal, Silikon & Özel Kalıp | Glory Cord',
+    description: 'Metal uçlu, silikon uçlu, yuvarlak, yassı ve elastik kordon çeşitleri. Polyester, pamuk, naylon iplik seçenekleriyle markanıza özel üretim.',
     url: 'https://glorycord.com/urunler',
   },
 };

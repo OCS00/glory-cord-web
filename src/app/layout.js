@@ -15,14 +15,67 @@ const montserrat = Montserrat({
   display: 'swap', 
 });
 
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@graph': [
+    {
+      '@type': 'WebSite',
+      name: 'GLORY CORD',
+      url: 'https://glorycord.com',
+    },
+    {
+      '@type': 'Organization',
+      name: 'Glory Cord',
+      url: 'https://glorycord.com',
+      logo: 'https://glorycord.com/gloryy.png',
+      image: 'https://glorycord.com/gloryy.png',
+      description: 'Metal uçlu, silikon uçlu ve özel kalıp kordon çözümleri. Türkiye\'nin premium tekstil kordon üreticisi.',
+      telephone: '+905318153611',
+      email: 'ibrahimhalilsahin1@gmail.com',
+      address: {
+        '@type': 'PostalAddress',
+        streetAddress: 'Menderes Mah. 15 Temmuz Şehitler Ve Gaziler Cad. No: 1/4',
+        addressLocality: 'Kahta',
+        addressRegion: 'Adıyaman',
+        addressCountry: 'TR',
+      },
+      openingHoursSpecification: [
+        {
+          '@type': 'OpeningHoursSpecification',
+          dayOfWeek: ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday'],
+          opens: '09:00',
+          closes: '18:00',
+        },
+      ],
+      contactPoint: {
+        '@type': 'ContactPoint',
+        telephone: '+905318153611',
+        contactType: 'customer service',
+        availableLanguage: 'Turkish',
+      },
+    },
+  ],
+};
+
 export const metadata = {
   metadataBase: new URL('https://glorycord.com'),
   title: {
-    default: 'GLORY CORD | Premium Kordon Üretimi',
-    template: '%s | Glory Cord',
+    default: 'Glory Cord | Türkiye\'nin Kordon Üreticisi — Metal Uçlu, Silikon Uçlu, Özel Kalıp & Toptan Kordon',
+    template: '%s | Glory Cord — Kordon Üreticisi',
   },
-  description: 'Metal uçlu, silikon uçlu ve özel kalıp kordon çözümleri. Türkiye\'nin premium tekstil kordon üreticisi — milimetrik hassasiyetle, sıfır hata toleransıyla.',
-  keywords: ['kordon', 'kordon üretimi', 'metal uçlu kordon', 'silikon uçlu kordon', 'özel kalıp kordon', 'tekstil aksesuar', 'glory cord', 'kordon üretici', 'toptan kordon'],
+  description: 'Metal uçlu kordon, silikon uçlu kordon, yuvarlak kordon ve yassı kordon üretiminde Türkiye\'nin önde gelen tesisi. Polyester, pamuk, naylon iplik seçenekleri. Toptan ve markalı üretim — hızlı numune.',
+  keywords: [
+    'kordon', 'kordon üretimi', 'kordon üreticisi', 'toptan kordon',
+    'metal uçlu kordon', 'silikon uçlu kordon', 'plastik uçlu kordon', 'özel kalıp kordon',
+    'yuvarlak kordon', 'yassı kordon', 'elastik kordon', 'örgülü kordon', 'baskılı kordon',
+    'polyester kordon', 'pamuk kordon', 'naylon kordon', 'akrilik kordon',
+    'tekstil iplik', 'tekstil aksesuar', 'giyim aksesuar', 'moda aksesuar',
+    'glory cord', 'glorycord',
+    'adıyaman kordon', 'kahta kordon', 'türkiye kordon üreticisi',
+    'lazer kesimli kordon', 'termoplastik uçlu kordon', 'deri uçlu kordon',
+    'numune talebi', 'özel üretim', 'markalı kordon', 'kordon imalatı',
+    'ip', 'iplik', 'kordon imalatçısı', 'şerit', 'tekstil şerit',
+  ],
   authors: [{ name: 'Glory Cord' }],
   creator: 'Glory Cord',
   publisher: 'Glory Cord',
@@ -31,24 +84,20 @@ export const metadata = {
     locale: 'tr_TR',
     url: 'https://glorycord.com',
     siteName: 'Glory Cord',
-    title: 'GLORY CORD | Premium Kordon Üretimi',
-    description: 'Metal uçlu, silikon uçlu ve özel kalıp kordon çözümleri. Türkiye\'nin premium kordon üreticisi.',
-    images: [{ url: '/gloryy.png', width: 1200, height: 630, alt: 'Glory Cord Premium Kordon' }],
+    title: 'Glory Cord | Türkiye\'nin Kordon Üreticisi — Metal Uçlu, Silikon Uçlu & Özel Kalıp',
+    description: 'Metal uçlu kordon, silikon uçlu kordon, yuvarlak & yassı kordon üretimi. Polyester, pamuk, naylon iplik. 18M+ metre/yıl kapasite — toptan ve markalı üretim.',
+    images: [{ url: '/gloryy.png', width: 252, height: 249, alt: 'Glory Cord — Premium Kordon Üreticisi' }],
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'GLORY CORD | Premium Kordon Üretimi',
-    description: 'Metal uçlu, silikon uçlu ve özel kalıp kordon çözümleri.',
+    title: 'Glory Cord | Türkiye\'nin Kordon Üreticisi',
+    description: 'Metal uçlu, silikon uçlu ve özel kalıp kordon üretimi. Toptan ve markalı üretim için hızlı numune dönüşü.',
     images: ['/gloryy.png'],
   },
   robots: {
     index: true,
     follow: true,
     googleBot: { index: true, follow: true, 'max-image-preview': 'large' },
-  },
-  icons: {
-    icon: '/gloryy.png',
-    apple: '/gloryy.png',
   },
 };
 
@@ -61,7 +110,11 @@ export default function RootLayout({ children }) {
         Böylece sayfa içeriği az olsa bile Footer her zaman en altta kalır.
       */}
       <body className={`${montserrat.className} bg-[#050505] text-white antialiased flex flex-col min-h-screen`}>
-        
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+        />
+
         {/* Her sayfanın en üstünde otomatik olarak çıkacak Üst Menü */}
         <Navbar />
 

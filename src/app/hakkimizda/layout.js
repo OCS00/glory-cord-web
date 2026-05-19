@@ -1,9 +1,9 @@
 export const metadata = {
-  title: 'Hakkımızda',
-  description: 'Glory Cord olarak yılların getirdiği endüstriyel tecrübeyi modern tasarım anlayışıyla harmanlıyoruz. Tekstil dünyasının premium kordon üreticisi.',
+  title: 'Hakkımızda — Türkiye\'nin Kordon & Tekstil Aksesuar Üreticisi',
+  description: 'Glory Cord olarak 18M+ metre/yıl kapasiteli entegre tesisimizde metal uçlu kordon, silikon uçlu kordon ve özel kalıp kordon üretiyoruz. Iplik bükümünden lazer işlemeye tüm süreçler tek çatı altında.',
   openGraph: {
-    title: 'Hakkımızda | Glory Cord',
-    description: 'Yılların getirdiği endüstriyel tecrübeyi modern tasarım anlayışıyla harmanlayan Glory Cord\'un hikayesini keşfedin.',
+    title: 'Hakkımızda — Glory Cord | Türkiye\'nin Kordon Üreticisi',
+    description: 'Entegre tesisimizde iplik bükümünden lazer işlemeye kadar tüm süreçleri kendi bünyemizde gerçekleştiriyoruz. 18M+ metre/yıl kapasite.',
     url: 'https://glorycord.com/hakkimizda',
   },
 };
